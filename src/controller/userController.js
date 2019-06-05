@@ -48,20 +48,37 @@ module.exports.signup = async (req, res, next) => {
       "INSERT INTO users SET name=?,email=?,password=?",
       [user.name, user.email, user.password]
     );
-    const token = await jwt.sign({ id: result.id }, process.env.JWT_SECRET);
+    const token = await jwt.sign(
+      { id: result.insertId },
+      process.env.JWT_SECRET
+    );
     delete user.password;
-    return res.send({ ...user, token });
+    return res.send({ id: result.insertId, ...user, token });
   } catch (error) {
     return res.status(500).send({ error });
   }
 };
 module.exports.login = async (req, res) => {
   const user = req.body;
-  console.log(user);
-  const results = await pool.query("SELECT * FROM users WHERE email=?", [
-    user.email
-  ]);
-  if (results.length >= 1) {
-    return res.send({ error: "Invalid email or password" });
+  try {
+    const result = await pool.query(
+      "SELECT * FROM users WHERE email=? LIMIT 1",
+      [user.email]
+    );
+    if (result.length === 0) {
+      res.status(404).send({ error: "Invalid email or password" });
+    }
+    const isMatch = await bcrypt.compare(user.password, result[0].password);
+    if (!isMatch) {
+      return res.status(404).send({
+        error: "Invalid email or password"
+      });
+    }
+    const token = await jwt.sign({ id: result[0].id }, process.env.JWT_SECRET);
+    delete result[0].password;
+
+    res.send({ ...result[0], token });
+  } catch (error) {
+    res.status(500).send({ error });
   }
 };
