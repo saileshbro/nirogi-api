@@ -28,5 +28,9 @@ module.exports.addDiseases = async (req, res) => {
       return res.send({ error: "Error occured while inserting" });
     }
     res.send(disease);
-  } catch (error) {}
+  } catch (error) {
+    return res.status(500).json({
+      error: "Internal server error."
+    });
+  }
 };
