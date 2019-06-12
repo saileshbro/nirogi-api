@@ -1,0 +1,11 @@
+const router = require("express").Router();
+const auth = require("../auth/auth");
+const postController = require("../controller/postController");
+router.get("/posts", auth, postController.getPosts);
+router.post("/posts", auth, postController.createPost);
+router.get("/post/:post_id", auth, postController.viewPost);
+router.post("/post/:post_id/upvote", auth, postController.upVotePost);
+router.post("/post/:post_id/downvote", auth, postController.downVotePost);
+router.patch("/post/:post_id", auth, postController.updatePost);
+router.delete("/post/:post_id", auth, postController.deletePost);
+module.exports = router;

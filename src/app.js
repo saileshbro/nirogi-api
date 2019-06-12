@@ -10,8 +10,10 @@ const port = process.env.PORT || 3000;
 
 const userRouter = require("./routes/user");
 const diseaseRouter = require("./routes/disease");
+const postRouter = require("./routes/post");
 app.use("/api", userRouter);
 app.use("/api", diseaseRouter);
+app.use("/api", postRouter);
 app.listen(port, () => {
   console.log(`Server listening at port ${port}`);
 });
