@@ -2,13 +2,16 @@ const jwt = require("jsonwebtoken");
 const pool = require("../database/database");
 const auth = async (req, res, next) => {
   try {
+    if (!req.header("Authorization")) {
+      return res.status(401).json({ error: "Please authenticate" });
+    }
     const token = req.header("Authorization").replace("Bearer ", "");
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const user = await pool.query("SELECT * FROM users WHERE user_id=?", [
       decoded.user_id
     ]);
     if (user.length === 0) {
-      res.status(500).json({ error: "Internal server error" });
+      return res.status(401).json({ error: "Please authenticate" });
     }
     req.token = token;
     req.user = user[0];
@@ -17,7 +20,7 @@ const auth = async (req, res, next) => {
     delete req.user.updated_at;
     next();
   } catch (error) {
-    res.status(401).json({ error: "Please authenticate" });
+    return res.status(500).json({ error: "Internal server error" });
   }
 };
 module.exports = auth;
