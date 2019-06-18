@@ -353,9 +353,7 @@ module.exports.getComments = async (req, res) => {
       ON v.comment_id=c.comment_id
       AND v.user_id=?`,
       [post_id, req.user.user_id]
-    );
-    console.log(result);
-    return res.send(result);
+    );// return res.send(result);
     if (result.length == 0) {
       return res.status(404).json({ error: "No comments found." });
     } else {
