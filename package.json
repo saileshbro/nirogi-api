@@ -30,6 +30,7 @@
     "cors": "^2.8.5",
     "dotenv": "^8.0.0",
     "express": "^4.17.1",
+    "htmlencode": "0.0.4",
     "jsonwebtoken": "^8.5.1",
     "mysql2": "^1.6.5",
     "util": "^0.12.0",

@@ -29,11 +29,15 @@ module.exports.viewPosts = async (req, res) => {
       [req.user.user_id, 0]
     );
     if (results.length == 0) {
-      return res.status(404).json({ error: "No posts found" });
+      return res.status(404).json({
+        error: "No posts found"
+      });
     }
     return res.json(results);
   } catch (error) {
-    return res.status(500).json({ error: "Internal server eror" });
+    return res.status(500).json({
+      error: "Internal server eror"
+    });
   }
 };
 module.exports.createPost = async (req, res) => {
@@ -58,7 +62,9 @@ module.exports.createPost = async (req, res) => {
         category_id: category_id
       });
     } else {
-      return res.status(500).json({ error: "Unable to create a post." });
+      return res.status(500).json({
+        error: "Unable to create a post."
+      });
     }
   } catch (error) {
     return res.status(500).json({
@@ -100,14 +106,22 @@ module.exports.viewPost = async (req, res) => {
       [post_id, req.user.user_id, 0]
     );
     if (result.length == 0) {
-      return res.status(404).json({ error: "Post not found." });
+      return res.status(404).json({
+        error: "Post not found."
+      });
     }
     if (!(post && result)) {
-      return res.status(500).json({ error: "Internal server error" });
+      return res.status(500).json({
+        error: "Internal server error"
+      });
     }
-    return res.json({ ...result[0] });
+    return res.json({
+      ...result[0]
+    });
   } catch (error) {
-    return res.status(500).json({ error: "Internal server error." });
+    return res.status(500).json({
+      error: "Internal server error."
+    });
   }
 };
 module.exports.upVotePost = async (req, res) => {
@@ -118,7 +132,9 @@ module.exports.upVotePost = async (req, res) => {
       [post_id]
     );
     if (ifPostExists.length == 0) {
-      return res.status(403).send({ error: "Post not found" });
+      return res.status(403).send({
+        error: "Post not found"
+      });
     }
     const result = await pool.query(
       "SELECT * FROM votes WHERE post_id=? AND user_id=?",
@@ -134,13 +150,19 @@ module.exports.upVotePost = async (req, res) => {
           "UPDATE posts SET vote_count=vote_count+1 WHERE post_id=?",
           [post_id]
         );
-        return res.send({ message: "Upvoted" });
+        return res.send({
+          message: "Upvoted"
+        });
       } else {
-        return res.status(403).send({ error: "Unable to upvote" });
+        return res.status(403).send({
+          error: "Unable to upvote"
+        });
       }
     } else {
       if (result[0].value == 1) {
-        return res.status(403).send({ error: "Already upvoted." });
+        return res.status(403).send({
+          error: "Already upvoted."
+        });
       } else if (result[0].value == -1) {
         const update = await pool.query(
           "UPDATE votes SET value=? WHERE post_id=? AND user_id=?",
@@ -151,14 +173,20 @@ module.exports.upVotePost = async (req, res) => {
             "UPDATE posts SET vote_count=vote_count+2 WHERE post_id=?",
             [post_id]
           );
-          return res.send({ message: "Upvoted" });
+          return res.send({
+            message: "Upvoted"
+          });
         } else {
-          return res.status(403).send({ error: "Unable to upvote" });
+          return res.status(403).send({
+            error: "Unable to upvote"
+          });
         }
       }
     }
   } catch (error) {
-    return res.status(500).send({ error: "Internal server error." });
+    return res.status(500).send({
+      error: "Internal server error."
+    });
   }
 };
 module.exports.downVotePost = async (req, res) => {
@@ -169,13 +197,14 @@ module.exports.downVotePost = async (req, res) => {
       [post_id]
     );
     if (ifPostExists.length == 0) {
-      return res.status(403).send({ error: "Post not found" });
+      return res.status(403).send({
+        error: "Post not found"
+      });
     }
     const result = await pool.query(
       "SELECT * FROM votes WHERE post_id=? AND user_id=?",
       [post_id, req.user.user_id]
     );
-    console.log(result);
 
     if (result.length == 0) {
       const insert = await pool.query(
@@ -187,15 +216,20 @@ module.exports.downVotePost = async (req, res) => {
           "UPDATE posts SET vote_count=vote_count-1 WHERE post_id=?",
           [post_id]
         );
-        return res.send({ message: "Downvoted" });
+        return res.send({
+          message: "Downvoted"
+        });
       } else {
-        return res.status(403).send({ error: "Unable to upvote" });
+        return res.status(403).send({
+          error: "Unable to upvote"
+        });
       }
     } else {
       if (result[0].value == -1) {
-        return res.status(403).send({ error: "Already downvoted." });
+        return res.status(403).send({
+          error: "Already downvoted."
+        });
       } else if (result[0].value == 1) {
-        console.log("heh");
 
         const update = await pool.query(
           "UPDATE votes SET value=? WHERE post_id=? AND user_id=?",
@@ -207,14 +241,20 @@ module.exports.downVotePost = async (req, res) => {
             "UPDATE posts SET vote_count=vote_count-2 WHERE post_id=?",
             [post_id]
           );
-          return res.send({ message: "Downvoted" });
+          return res.send({
+            message: "Downvoted"
+          });
         } else {
-          return res.status(403).send({ error: "Unable to upvote" });
+          return res.status(403).send({
+            error: "Unable to upvote"
+          });
         }
       }
     }
   } catch (error) {
-    return res.status(500).send({ error: "Internal server error." });
+    return res.status(500).send({
+      error: "Internal server error."
+    });
   }
 };
 module.exports.updatePost = async (req, res) => {
@@ -233,16 +273,24 @@ module.exports.updatePost = async (req, res) => {
       [post_title, post_body, post_id, user_id]
     );
     if (!result) {
-      return res.status(404).send({ error: "Post not found." });
+      return res.status(404).send({
+        error: "Post not found."
+      });
     }
     if (result.affectedRows == 0) {
-      return res.status(403).send({ error: "Unable to update a post." });
+      return res.status(403).send({
+        error: "Unable to update a post."
+      });
     }
     if (result.affectedRows == 1) {
-      return res.json({ message: "Sucessfully updated." });
+      return res.json({
+        message: "Sucessfully updated."
+      });
     }
   } catch (error) {
-    return res.status(500).send({ error: "Internal server error." });
+    return res.status(500).send({
+      error: "Internal server error."
+    });
   }
 };
 module.exports.deletePost = async (req, res) => {
@@ -254,16 +302,24 @@ module.exports.deletePost = async (req, res) => {
       [post_id, req.user.user_id]
     );
     if (!result) {
-      return res.status(404).send({ error: "Post not found." });
+      return res.status(404).send({
+        error: "Post not found."
+      });
     }
     if (result.affectedRows == 0) {
-      return res.status(403).send({ error: "Unable to delete a post." });
+      return res.status(403).send({
+        error: "Unable to delete a post."
+      });
     }
     if (result.affectedRows == 1) {
-      return res.json({ message: "Sucessfully deleted." });
+      return res.json({
+        message: "Sucessfully deleted."
+      });
     }
   } catch (error) {
-    return res.status(500).send({ error: "Internal server error." });
+    return res.status(500).send({
+      error: "Internal server error."
+    });
   }
 };
 
@@ -272,13 +328,14 @@ module.exports.createComment = async (req, res) => {
   const comment = req.body.comment;
   try {
     if (comment.length == 0) {
-      return res.status(403).send({ error: "Unable to comment." });
+      return res.status(403).send({
+        error: "Unable to comment."
+      });
     }
     const result = await pool.query(
       "INSERT INTO comments SET post_id=?,user_id=?,comment=?",
       [post_id, req.user.user_id, comment]
     );
-    console.log(result);
     if (result.affectedRows == 1) {
       return res.send({
         comment_id: result.insertId,
@@ -287,10 +344,14 @@ module.exports.createComment = async (req, res) => {
         comment
       });
     } else {
-      return res.status(403).send({ error: "Unable to comment." });
+      return res.status(403).send({
+        error: "Unable to comment."
+      });
     }
   } catch (error) {
-    return res.status(500).send({ error: "Internal server error." });
+    return res.status(500).send({
+      error: "Internal server error."
+    });
   }
 };
 module.exports.getComment = async (req, res) => {
@@ -353,14 +414,18 @@ module.exports.getComments = async (req, res) => {
       ON v.comment_id=c.comment_id
       AND v.user_id=?`,
       [post_id, req.user.user_id]
-    );// return res.send(result);
+    ); // return res.send(result);
     if (result.length == 0) {
-      return res.status(404).json({ error: "No comments found." });
+      return res.status(404).json({
+        error: "No comments found."
+      });
     } else {
       return res.send(result);
     }
   } catch (error) {
-    return res.status(500).send({ error: "Internal server error." });
+    return res.status(500).send({
+      error: "Internal server error."
+    });
   }
 };
 module.exports.editComment = async (req, res) => {
@@ -374,10 +439,14 @@ module.exports.editComment = async (req, res) => {
       [post_id, comment_id, user_id]
     );
     if (ifExist.length == 0) {
-      return res.status(403).send({ error: "Cannot edit comment." });
+      return res.status(403).send({
+        error: "Cannot edit comment."
+      });
     }
     if (!comment) {
-      return res.status(403).send({ error: "Unable to update a comment." });
+      return res.status(403).send({
+        error: "Unable to update a comment."
+      });
     }
     const result = await pool.query(
       "UPDATE comments SET comment=? WHERE post_id=? AND comment_id=?",
@@ -388,10 +457,14 @@ module.exports.editComment = async (req, res) => {
         message: "Comment edited sucessfully."
       });
     } else {
-      return res.status(403).send({ error: "Cannot edit comment." });
+      return res.status(403).send({
+        error: "Cannot edit comment."
+      });
     }
   } catch (error) {
-    return res.status(500).send({ error: "Internal server error." });
+    return res.status(500).send({
+      error: "Internal server error."
+    });
   }
 };
 module.exports.deleteComment = async (req, res) => {
@@ -413,14 +486,18 @@ module.exports.deleteComment = async (req, res) => {
       [post_id, user_id, comment_id]
     );
     if (result.affectedRows == 1) {
-      return res.send({ message: "Sucessfully deleted." });
+      return res.send({
+        message: "Sucessfully deleted."
+      });
     } else {
       return req.status(404).send({
         error: "Unable to delete a comment."
       });
     }
   } catch (error) {
-    return res.status(500).send({ error: "Internal server error." });
+    return res.status(500).send({
+      error: "Internal server error."
+    });
   }
 };
 module.exports.upVoteComment = async (req, res) => {
@@ -432,7 +509,9 @@ module.exports.upVoteComment = async (req, res) => {
       [post_id]
     );
     if (ifCommentExists.length == 0) {
-      return res.status(403).send({ error: "Comment not found" });
+      return res.status(403).send({
+        error: "Comment not found"
+      });
     }
     const result = await pool.query(
       "SELECT * FROM votes WHERE post_id=? AND user_id=? AND comment_id=?",
@@ -448,13 +527,19 @@ module.exports.upVoteComment = async (req, res) => {
           "UPDATE comments SET vote_count=vote_count+1 WHERE comment_id=?",
           [comment_id]
         );
-        return res.send({ message: "Upvoted" });
+        return res.send({
+          message: "Upvoted"
+        });
       } else {
-        return res.status(403).send({ error: "Unable to upvote" });
+        return res.status(403).send({
+          error: "Unable to upvote"
+        });
       }
     } else {
       if (result[0].value == 1) {
-        return res.status(403).send({ error: "Already upvoted." });
+        return res.status(403).send({
+          error: "Already upvoted."
+        });
       } else if (result[0].value == -1) {
         const update = await pool.query(
           "UPDATE votes SET value=? WHERE post_id=? AND user_id=? AND comment_id=?",
@@ -465,14 +550,20 @@ module.exports.upVoteComment = async (req, res) => {
             "UPDATE comments SET vote_count=vote_count+2 WHERE comment_id=?",
             [comment_id]
           );
-          return res.send({ message: "Upvoted" });
+          return res.send({
+            message: "Upvoted"
+          });
         } else {
-          return res.status(403).send({ error: "Unable to upvote" });
+          return res.status(403).send({
+            error: "Unable to upvote"
+          });
         }
       }
     }
   } catch (error) {
-    return res.status(500).send({ error: "Internal server error." });
+    return res.status(500).send({
+      error: "Internal server error."
+    });
   }
 };
 module.exports.downVoteComment = async (req, res) => {
@@ -484,7 +575,9 @@ module.exports.downVoteComment = async (req, res) => {
       [post_id]
     );
     if (ifCommentExists.length == 0) {
-      return res.status(403).send({ error: "Comment not found" });
+      return res.status(403).send({
+        error: "Comment not found"
+      });
     }
     const result = await pool.query(
       "SELECT * FROM votes WHERE post_id=? AND user_id=? AND comment_id=?",
@@ -500,13 +593,19 @@ module.exports.downVoteComment = async (req, res) => {
           "UPDATE comments SET vote_count=vote_count-1 WHERE comment_id=?",
           [comment_id]
         );
-        return res.send({ message: "Downvoted" });
+        return res.send({
+          message: "Downvoted"
+        });
       } else {
-        return res.status(403).send({ error: "Unable to downvote" });
+        return res.status(403).send({
+          error: "Unable to downvote"
+        });
       }
     } else {
       if (result[0].value == -1) {
-        return res.status(403).send({ error: "Already downvoted." });
+        return res.status(403).send({
+          error: "Already downvoted."
+        });
       } else if (result[0].value == 1) {
         const update = await pool.query(
           "UPDATE votes SET value=? WHERE post_id=? AND user_id=? AND comment_id=?",
@@ -517,13 +616,19 @@ module.exports.downVoteComment = async (req, res) => {
             "UPDATE comments SET vote_count=vote_count-2 WHERE comment_id=?",
             [comment_id]
           );
-          return res.send({ message: "Downvoted" });
+          return res.send({
+            message: "Downvoted"
+          });
         } else {
-          return res.status(403).send({ error: "Unable to downvote" });
+          return res.status(403).send({
+            error: "Unable to downvote"
+          });
         }
       }
     }
   } catch (error) {
-    return res.status(500).send({ error: "Internal server error." });
+    return res.status(500).send({
+      error: "Internal server error."
+    });
   }
 };
