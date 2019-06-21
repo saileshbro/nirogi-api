@@ -2,57 +2,52 @@ const pool = require("../database/database");
 const bcrypt = require("bcryptjs");
 const validator = require("validator");
 const jwt = require("jsonwebtoken");
+const nameValidator = require("../functions/validateName");
+const passwordValidator = require('../functions/validatePassword');
 const randomString = require("../functions/randomString");
-module.exports.getUsers = async (req, res) => {
-  try {
-    const users = await pool.query("SELECT * FROM users");
-
-    if (users.length === 0) {
-      return res.json({
-        error: "No users found."
-      });
-    }
-    res.json(users);
-  } catch (error) {
-    res.json({
-      error
-    });
-  }
-};
-
 module.exports.signup = async (req, res) => {
   const user = req.body;
   user.email = user.email.trim().toLowerCase();
   user.name = user.name.trim();
   try {
     if (user.name.length == 0) {
-      return res.status(406).json({ error: "Empty name provided." });
+      return res.status(406).json({
+        error: "Empty name provided."
+      });
     }
     if (user.email.length == 0) {
-      return res.status(406).json({ error: "Empty email provided." });
+      return res.status(406).json({
+        error: "Empty email provided."
+      });
     }
     if (user.password.length == 0) {
-      return res.status(406).json({ error: "Empty password provided." });
+      return res.status(406).json({
+        error: "Empty password provided."
+      });
     }
     if (!validator.isEmail(user.email)) {
-      return res.status(406).json({ error: "Invalid email." });
-    }
-    let regName = /^[a-zA-Z][a-zA-Z\s]*$/;
-    if (!regName.test(user.name)) {
-      return res.status(406).json({ error: "Invalid name" });
-    }
-    regName = /^(?:(?=.*[a-z])(?:(?=.*[A-Z])(?=.*[\d\W])|(?=.*\W)(?=.*\d))|(?=.*\W)(?=.*[A-Z])(?=.*\d)).{8,}$/;
-    if (!regName.test(user.password)) {
       return res.status(406).json({
-        error:
-          "Required: Minimum eight characters, at least one letter, one number and one special character."
+        error: "Invalid email."
+      });
+    }
+
+    if (!nameValidator.isNameValid(user.name)) {
+      return res.status(406).json({
+        error: "Invalid name"
+      });
+    }
+    if (!passwordValidator.isPasswordValid(user.password)) {
+      return res.status(406).json({
+        error: "Required: Minimum eight characters, at least one letter, one number and one special character."
       });
     }
     const users = await pool.query("SELECT * FROM users WHERE email=?", [
       user.email
     ]);
     if (users.length != 0) {
-      return res.status(409).json({ error: "Email already registered" });
+      return res.status(409).json({
+        error: "Email already registered"
+      });
     }
     user.password = await bcrypt.hash(
       user.password,
@@ -63,15 +58,22 @@ module.exports.signup = async (req, res) => {
       [user.name, user.email, user.password]
     );
 
-    const token = await jwt.sign(
-      { user_id: result.insertId },
+    const token = await jwt.sign({
+        user_id: result.insertId
+      },
       process.env.JWT_SECRET
     );
     delete user.password;
 
-    return res.json({ user_id: result.insertId, ...user, token });
+    return res.json({
+      user_id: result.insertId,
+      ...user,
+      token
+    });
   } catch (error) {
-    return res.status(500).json({ error });
+    return res.status(500).json({
+      error
+    });
   }
 };
 
@@ -80,17 +82,23 @@ module.exports.login = async (req, res) => {
   user.email = user.email.trim().toLowerCase();
   try {
     if (user.email.length == 0) {
-      return res.status(406).json({ error: "Empty email provided." });
+      return res.status(406).json({
+        error: "Empty email provided."
+      });
     }
     if (user.password.length == 0) {
-      return res.status(406).json({ error: "Empty password provided." });
+      return res.status(406).json({
+        error: "Empty password provided."
+      });
     }
     const result = await pool.query(
       "SELECT user_id,name,password,email,imageUrl,address,updated_at FROM users WHERE email=? LIMIT 1",
       [user.email]
     );
     if (result.length === 0) {
-      return res.status(404).json({ error: "Invalid email or password" });
+      return res.status(404).json({
+        error: "Invalid email or password"
+      });
     }
     const isMatch = await bcrypt.compare(user.password, result[0].password);
     if (!isMatch) {
@@ -98,14 +106,20 @@ module.exports.login = async (req, res) => {
         error: "Invalid email or password"
       });
     }
-    const token = await jwt.sign(
-      { user_id: result[0].user_id },
+    const token = await jwt.sign({
+        user_id: result[0].user_id
+      },
       process.env.JWT_SECRET
     );
     delete result[0].password;
-    return res.json({ ...result[0], token });
+    return res.json({
+      ...result[0],
+      token
+    });
   } catch (error) {
-    return res.status(500).json({ error: "Internal server error" });
+    return res.status(500).json({
+      error: "Internal server error"
+    });
   }
 };
 module.exports.logout = async (req, res) => {
@@ -124,10 +138,14 @@ module.exports.changepw = async (req, res) => {
       req.user.email
     ]);
     if (!currentpw || currentpw.length == 0) {
-      return res.status(406).json({ error: "Empty currentpw provided." });
+      return res.status(406).json({
+        error: "Empty currentpw provided."
+      });
     }
     if (!newpw || newpw.length == 0) {
-      return res.status(406).json({ error: "Empty newpw provided." });
+      return res.status(406).json({
+        error: "Empty newpw provided."
+      });
     }
     const isMatch = await bcrypt.compare(currentpw, user[0].password);
     if (!isMatch) {
@@ -135,11 +153,9 @@ module.exports.changepw = async (req, res) => {
         error: "Current password didn't match."
       });
     }
-    regName = /^(?:(?=.*[a-z])(?:(?=.*[A-Z])(?=.*[\d\W])|(?=.*\W)(?=.*\d))|(?=.*\W)(?=.*[A-Z])(?=.*\d)).{8,}$/;
-    if (!regName.test(newpw)) {
+    if (!passwordValidator.isPasswordValid(newpw)) {
       return res.status(406).json({
-        error:
-          "Required: Minimum eight characters, at least one letter, one number and one special character."
+        error: "Required: Minimum eight characters, at least one letter, one number and one special character."
       });
     }
     newpw = await bcrypt.hash(newpw, parseInt(process.env.SALT_ROUNDS));
@@ -149,9 +165,13 @@ module.exports.changepw = async (req, res) => {
     );
 
     if (result.affectedRows == 1) {
-      return res.send({ message: "Password changed sucessfully" });
+      return res.send({
+        message: "Password changed sucessfully"
+      });
     } else if (result.affectedRows == 0) {
-      return res.status(403).send({ message: "Failed to update password" });
+      return res.status(403).send({
+        message: "Failed to update password"
+      });
     }
   } catch (error) {
     return res.status(500).send({
@@ -175,7 +195,9 @@ module.exports.forgot = async (req, res) => {
     if (result.length == 0) {
       return res
         .status(403)
-        .send({ error: "Email not associated to any account" });
+        .send({
+          error: "Email not associated to any account"
+        });
     } else if (result.length == 1) {
       // send reset email here
       const update = await pool.query(
@@ -183,7 +205,13 @@ module.exports.forgot = async (req, res) => {
         [random, email]
       );
       // send mail here
-      return res.send({ fcode: random });
+      return res.send({
+        fcode: random
+      });
     }
-  } catch (error) {}
+  } catch (error) {
+    return res.status(500).send({
+      error: "Internal server error."
+    });
+  }
 };
