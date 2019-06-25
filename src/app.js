@@ -16,12 +16,14 @@ const symptomRouter = require("./routes/symptom");
 const postRouter = require("./routes/post");
 const profileRouter = require("./routes/profile");
 const tipsRouter = require("./routes/tips");
+const newsRouter = require("./routes/news");
 app.use("/api", userRouter);
 app.use("/api", diseaseRouter);
 app.use("/api", postRouter);
 app.use('/api', profileRouter);
 app.use('/api', symptomRouter);
 app.use('/api', tipsRouter);
+app.use('/api', newsRouter);
 app.listen(port, () => {
   console.log(`Server listening at port ${port}`);
 });
