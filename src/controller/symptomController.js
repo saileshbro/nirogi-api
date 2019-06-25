@@ -65,4 +65,21 @@ module.exports.updateSymptom = async (req, res) => {
     if (result) {
         return res.sendStatus(200);
     }
-}
+};
+module.exports.topSymptoms = async (req, res) => {
+    try {
+        const results = await pool.query("SELECT symptom_id,symptom,imageUrl,description FROM symptoms ORDER BY CHAR_LENGTH(body) DESC LIMIT 8");
+        if (results.length === 0) {
+            return res.status(404).json({
+                error: "Symptoms not found"
+            });
+        }
+        return res.json({
+            symptoms: results
+        });
+    } catch (error) {
+        return res.status(500).json({
+            error: "Internal server error"
+        });
+    }
+};

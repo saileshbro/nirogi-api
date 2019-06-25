@@ -66,3 +66,20 @@ module.exports.updateDisease = async (req, res) => {
     return res.sendStatus(200);
   }
 };
+module.exports.topDiseases = async (req, res) => {
+  try {
+    const results = await pool.query("SELECT disease_id,disease,imageUrl,description FROM diseases ORDER BY CHAR_LENGTH(body) DESC LIMIT 8");
+    if (results.length === 0) {
+      return res.status(404).json({
+        error: "Diseases not found"
+      });
+    }
+    return res.json({
+      diseases: results
+    });
+  } catch (error) {
+    return res.status(500).json({
+      error: "Internal server error"
+    });
+  }
+};
