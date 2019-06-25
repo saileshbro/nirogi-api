@@ -1,7 +1,11 @@
 const pool = require("../database/database");
+const timeago = require("../functions/timeAgo");
 module.exports.getAllNews = async (req, res) => {
   try {
-    const result = await pool.query("SELECT news_id,title,imageUrl,description,written_by FROM news ORDER BY updated_at");
+    const result = await pool.query(
+      "SELECT news_id,title,imageUrl,description,body,written_by,NOW()-updated_at AS updated_at FROM news ORDER BY updated_at"
+    );
+    result.forEach(rslt => (rslt.updated_at = timeago(rslt.updated_at)));
     return res.send({
       news: result
     });
