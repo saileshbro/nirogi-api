@@ -50,7 +50,9 @@ module.exports.getProfiles = async (req, res) => {
                 error: "No profiles found"
             });
         }
-        return res.send(result);
+        return res.send({
+            users: result
+        });
     } catch (error) {
         return res.status(500).send({
             error: "Internal server error."

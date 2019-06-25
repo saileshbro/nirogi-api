@@ -7,7 +7,9 @@ module.exports.getSymptoms = async (req, res) => {
                 error: "Symptoms not found"
             });
         }
-        return res.json(results);
+        return res.json({
+            symptoms: results
+        });
     } catch (error) {
         return res.status(500).json({
             error: "Internal server error"

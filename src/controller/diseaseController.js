@@ -7,7 +7,9 @@ module.exports.getDiseases = async (req, res) => {
         error: "Diseases not found"
       });
     }
-    return res.json(results);
+    return res.json({
+      diseases: results
+    });
   } catch (error) {
     return res.status(500).json({
       error: "Internal server error"
@@ -63,4 +65,4 @@ module.exports.updateDisease = async (req, res) => {
   if (result) {
     return res.sendStatus(200);
   }
-}
+};

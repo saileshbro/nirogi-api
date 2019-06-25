@@ -1,4 +1,5 @@
 const pool = require("../database/database");
+const timeago = require('../functions/timeAgo');
 module.exports.viewPosts = async (req, res) => {
   // here send response according to query params
   // send particular post related informations
@@ -11,7 +12,7 @@ module.exports.viewPosts = async (req, res) => {
       p.views,
       p.vote_count,
       p.comment_count,
-      p.updated_at,
+      NOW()-p.created_at as created_at,
       cat.category_id,
       cat.category,
       u.user_id,
@@ -33,7 +34,12 @@ module.exports.viewPosts = async (req, res) => {
         error: "No posts found"
       });
     }
-    return res.json(results);
+    results.forEach(rslt => {
+      rslt.created_at = timeago(rslt.created_at);
+    });
+    return res.json({
+      posts: results
+    });
   } catch (error) {
     return res.status(500).json({
       error: "Internal server eror"
@@ -87,7 +93,7 @@ module.exports.viewPost = async (req, res) => {
       p.views,
       p.vote_count,
       p.comment_count,
-      p.updated_at,
+      NOW()-p.created_at as created_at,
       cat.category_id,
       cat.category,
       u.user_id,
@@ -115,6 +121,7 @@ module.exports.viewPost = async (req, res) => {
         error: "Internal server error"
       });
     }
+    result[0].created_at = timeago(result[0].created_at);
     return res.json({
       ...result[0]
     });
@@ -366,7 +373,7 @@ module.exports.getComment = async (req, res) => {
       c.comment_id,
       c.comment,
       c.vote_count,
-      c.updated_at,
+      NOW()-c.updated_at as updated_at,
       v.value AS vote_status
       FROM comments AS c
       JOIN users AS u
@@ -402,7 +409,7 @@ module.exports.getComments = async (req, res) => {
       c.comment_id,
       c.comment,
       c.vote_count,
-      c.updated_at,
+      NOW()-c.updated_at as updated_at,
       v.value AS vote_status
       FROM comments AS c
       JOIN users AS u
@@ -420,7 +427,9 @@ module.exports.getComments = async (req, res) => {
         error: "No comments found."
       });
     } else {
-      return res.send(result);
+      return res.send({
+        comments: result
+      });
     }
   } catch (error) {
     return res.status(500).send({

@@ -70,7 +70,9 @@ module.exports.getDiseases = async (req, res) => {
             return res.status(404).send({
                 error: "No diseases found."
             });
-        } else return res.send(result);
+        } else return res.send({
+            diseases: result
+        });
     } catch (error) {
         return res.status(500).send({
             error: "Internal server error."
