@@ -1,5 +1,5 @@
 const pool = require("../database/database");
-const timeago = require('../functions/timeAgo');
+const timeago = require("../functions/timeAgo");
 module.exports.viewPosts = async (req, res) => {
   // here send response according to query params
   // send particular post related informations
@@ -111,6 +111,30 @@ module.exports.viewPost = async (req, res) => {
       AND v.user_id=? AND v.comment_id=?`,
       [post_id, req.user.user_id, 0]
     );
+    const comments = await pool.query(
+      `SELECT
+      u.user_id,
+      u.name,
+      u.imageUrl,
+      c.comment_id,
+      c.comment,
+      c.vote_count,
+      NOW()-c.created_at as created_at,
+      v.value AS vote_status
+      FROM comments AS c
+      JOIN users AS u
+      ON c.user_id=u.user_id
+      JOIN posts AS p
+      ON p.post_id=c.post_id
+      AND p.post_id=?
+      LEFT JOIN votes AS v
+      ON v.comment_id=c.comment_id
+      AND v.user_id=?`,
+      [post_id, req.user.user_id]
+    );
+    if (comments.length != 0) {
+      comments.forEach(rslt => (rslt.created_at = timeago(rslt.created_at)));
+    }
     if (result.length == 0) {
       return res.status(404).json({
         error: "Post not found."
@@ -123,7 +147,8 @@ module.exports.viewPost = async (req, res) => {
     }
     result[0].created_at = timeago(result[0].created_at);
     return res.json({
-      ...result[0]
+      post: result[0],
+      comments
     });
   } catch (error) {
     return res.status(500).json({
@@ -237,7 +262,6 @@ module.exports.downVotePost = async (req, res) => {
           error: "Already downvoted."
         });
       } else if (result[0].value == 1) {
-
         const update = await pool.query(
           "UPDATE votes SET value=? WHERE post_id=? AND user_id=?",
           [-1, post_id, req.user.user_id]
@@ -373,7 +397,7 @@ module.exports.getComment = async (req, res) => {
       c.comment_id,
       c.comment,
       c.vote_count,
-      NOW()-c.updated_at as updated_at,
+      NOW()-c.created_at as created_at,
       v.value AS vote_status
       FROM comments AS c
       JOIN users AS u
@@ -391,7 +415,10 @@ module.exports.getComment = async (req, res) => {
       return res.status(404).send({
         error: "No comment found"
       });
-    } else return res.send(result[0]);
+    } else {
+      result[0].created_at = timeago(result[0].created_at);
+      return res.send(result[0]);
+    }
   } catch (error) {
     return res.status(500).send({
       error: "Internal server error"
@@ -409,7 +436,7 @@ module.exports.getComments = async (req, res) => {
       c.comment_id,
       c.comment,
       c.vote_count,
-      NOW()-c.updated_at as updated_at,
+      NOW()-c.created_at as created_at,
       v.value AS vote_status
       FROM comments AS c
       JOIN users AS u
@@ -421,12 +448,13 @@ module.exports.getComments = async (req, res) => {
       ON v.comment_id=c.comment_id
       AND v.user_id=?`,
       [post_id, req.user.user_id]
-    ); // return res.send(result);
+    );
     if (result.length == 0) {
       return res.status(404).json({
         error: "No comments found."
       });
     } else {
+      result.forEach(rslt => (rslt.created_at = timeago(rslt.created_at)));
       return res.send({
         comments: result
       });
