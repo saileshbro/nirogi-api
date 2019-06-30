@@ -175,7 +175,7 @@ module.exports.viewPost = async (req, res) => {
     }
     result[0].created_at = timeago(result[0].created_at);
     return res.json({
-      post: result[0],
+      ...result[0],
       comments
     });
   } catch (error) {
