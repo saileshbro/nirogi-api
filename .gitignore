@@ -1,4 +1,4 @@
 node_modules
 .env
 .eslintrc.json
-public/uploads/
+src/public/
