@@ -22,6 +22,7 @@ const tipsRouter = require("./routes/tips");
 const newsRouter = require("./routes/news");
 const drugRouter = require("./routes/drug");
 const firstAidRouter = require("./routes/firstAid");
+const provinceRouter = require("./routes/province");
 app.use("/api", userRouter);
 app.use("/api", diseaseRouter);
 app.use("/api", postRouter);
@@ -30,6 +31,7 @@ app.use("/api", symptomRouter);
 app.use("/api", tipsRouter);
 app.use("/api", newsRouter);
 app.use("/api", drugRouter);
+app.use("/api", provinceRouter);
 app.use("/api", firstAidRouter);
 
 app.use("/public", express.static(path.join(__dirname, "public")));
