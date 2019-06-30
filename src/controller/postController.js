@@ -1,11 +1,16 @@
 const pool = require("../database/database");
 const timeago = require("../functions/timeAgo");
 module.exports.viewPosts = async (req, res) => {
+  const sort = req.query.sort;
+
+  // sort by most popular and sort by recent
   // here send response according to query params
   // send particular post related informations
+  // recent by default
   try {
-    const results = await pool.query(
-      `SELECT
+    let sql = "";
+    if (sort === "popular") {
+      sql = `SELECT
       p.post_id,
       p.title,
       p.body,
@@ -26,9 +31,32 @@ module.exports.viewPosts = async (req, res) => {
       ON p.category_id = cat.category_id
       LEFT JOIN votes AS v
       ON v.post_id=p.post_id
-      AND v.user_id=? AND v.comment_id=?`,
-      [req.user.user_id, 0]
-    );
+      AND v.user_id=? AND v.comment_id=? ORDER BY p.views DESC`;
+    } else {
+      sql = `SELECT
+      p.post_id,
+      p.title,
+      p.body,
+      p.views,
+      p.vote_count,
+      p.comment_count,
+      NOW()-p.created_at as created_at,
+      cat.category_id,
+      cat.category,
+      u.user_id,
+      u.name,
+      u.imageUrl,
+      v.value AS vote_status
+      FROM posts AS p
+      JOIN users AS u
+      ON p.user_id=u.user_id
+      LEFT join category as cat
+      ON p.category_id = cat.category_id
+      LEFT JOIN votes AS v
+      ON v.post_id=p.post_id
+      AND v.user_id=? AND v.comment_id=? ORDER BY p.created_at DESC`;
+    }
+    const results = await pool.query(sql, [req.user.user_id, 0]);
     if (results.length == 0) {
       return res.status(404).json({
         error: "No posts found"
@@ -129,7 +157,7 @@ module.exports.viewPost = async (req, res) => {
       AND p.post_id=?
       LEFT JOIN votes AS v
       ON v.comment_id=c.comment_id
-      AND v.user_id=?`,
+      AND v.user_id=? ORDER BY c.created_at ASC`,
       [post_id, req.user.user_id]
     );
     if (comments.length != 0) {
@@ -426,10 +454,12 @@ module.exports.getComment = async (req, res) => {
   }
 };
 module.exports.getComments = async (req, res) => {
+  const sort = req.query.sort;
   const post_id = req.params.post_id;
+  let sql = "";
   try {
-    const result = await pool.query(
-      `SELECT
+    if (sort === "time") {
+      sql = `SELECT
       u.user_id,
       u.name,
       u.imageUrl,
@@ -446,9 +476,28 @@ module.exports.getComments = async (req, res) => {
       AND p.post_id=?
       LEFT JOIN votes AS v
       ON v.comment_id=c.comment_id
-      AND v.user_id=?`,
-      [post_id, req.user.user_id]
-    );
+      AND v.user_id=? ORDER BY c.created_at ASC`;
+    } else if (sort === "votes") {
+      sql = `SELECT
+      u.user_id,
+      u.name,
+      u.imageUrl,
+      c.comment_id,
+      c.comment,
+      c.vote_count,
+      NOW()-c.created_at as created_at,
+      v.value AS vote_status
+      FROM comments AS c
+      JOIN users AS u
+      ON c.user_id=u.user_id
+      JOIN posts AS p
+      ON p.post_id=c.post_id
+      AND p.post_id=?
+      LEFT JOIN votes AS v
+      ON v.comment_id=c.comment_id
+      AND v.user_id=? ORDER BY c.vote_count DESC`;
+    }
+    const result = await pool.query(sql, [post_id, req.user.user_id]);
     if (result.length == 0) {
       return res.status(404).json({
         error: "No comments found."
@@ -543,7 +592,7 @@ module.exports.upVoteComment = async (req, res) => {
   try {
     const ifCommentExists = await pool.query(
       "SELECT * FROM comments WHERE comment_id=?",
-      [post_id]
+      [comment_id]
     );
     if (ifCommentExists.length == 0) {
       return res.status(403).send({
@@ -609,7 +658,7 @@ module.exports.downVoteComment = async (req, res) => {
   try {
     const ifCommentExists = await pool.query(
       "SELECT * FROM comments WHERE comment_id=?",
-      [post_id]
+      [comment_id]
     );
     if (ifCommentExists.length == 0) {
       return res.status(403).send({
