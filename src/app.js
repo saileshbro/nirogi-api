@@ -1,4 +1,5 @@
 require("dotenv").config();
+const path = require("path");
 const cors = require("cors");
 const express = require("express");
 const bodyParser = require("body-parser");
@@ -20,6 +21,7 @@ const profileRouter = require("./routes/profile");
 const tipsRouter = require("./routes/tips");
 const newsRouter = require("./routes/news");
 const drugRouter = require("./routes/drug");
+const firstAidRouter = require("./routes/firstAid");
 app.use("/api", userRouter);
 app.use("/api", diseaseRouter);
 app.use("/api", postRouter);
@@ -28,10 +30,12 @@ app.use("/api", symptomRouter);
 app.use("/api", tipsRouter);
 app.use("/api", newsRouter);
 app.use("/api", drugRouter);
+app.use("/api", firstAidRouter);
+
+app.use("/public", express.static(path.join(__dirname, "public")));
 app.get("*", function(req, res) {
   res.status(404).send({ error: "Page not found!" });
 });
-
 app.listen(port, () => {
   console.log(`Server listening at port ${port}`);
 });
