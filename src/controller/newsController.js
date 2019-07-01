@@ -3,12 +3,33 @@ const timeago = require("../functions/timeAgo");
 module.exports.getAllNews = async (req, res) => {
   try {
     const result = await pool.query(
-      "SELECT news_id,title,imageUrl,description,body,written_by,NOW()-updated_at AS updated_at FROM news ORDER BY updated_at"
+      "SELECT news_id,title,imageUrl,description,written_by,NOW()-updated_at AS updated_at FROM news ORDER BY updated_at"
     );
+    if (result.length == 0) {
+      return res.status(404).send({ error: "News not found!" });
+    }
     result.forEach(rslt => (rslt.updated_at = timeago(rslt.updated_at)));
     return res.send({
       news: result
     });
+  } catch (error) {
+    return res.status(500).send({
+      error: "Internal server error."
+    });
+  }
+};
+module.exports.getNewsItem = async (req, res) => {
+  const news_id = req.params.news_id;
+  try {
+    const result = await pool.query(
+      "SELECT news_id,title,imageUrl,description,body,written_by,NOW()-updated_at AS updated_at FROM news WHERE news_id=?",
+      [news_id]
+    );
+    if (result.length == 0) {
+      return res.status(404).send({ error: "News not found!" });
+    }
+    result.forEach(rslt => (rslt.updated_at = timeago(rslt.updated_at)));
+    return res.send(result[0]);
   } catch (error) {
     return res.status(500).send({
       error: "Internal server error."
