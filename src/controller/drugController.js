@@ -28,6 +28,7 @@ module.exports.getCommonDrugs = (req, res) => {
             const subSections = json.subSections;
             let imageUrl = "";
             let brandName = "";
+            let dose = "";
             if (
               !(
                 Object.entries(json.imageGroupMap).length === 0 &&
@@ -40,6 +41,9 @@ module.exports.getCommonDrugs = (req, res) => {
               brandName =
                 json.imageGroupMap[Object.keys(json.imageGroupMap)[0]]
                   .pillImages[0].brandName;
+              dose =
+                json.imageGroupMap[Object.keys(json.imageGroupMap)[0]]
+                  .pillImages[0].dosage;
             }
             const sections = [];
             for (const [index, object] of Object.entries(subSections)) {
@@ -58,6 +62,7 @@ module.exports.getCommonDrugs = (req, res) => {
                 brandName,
                 genericName,
                 imageUrl,
+                dose,
                 // sections,
                 summary: headerSummary
               });
@@ -89,6 +94,7 @@ module.exports.getDrug = (req, res) => {
       const json = response.data;
       const genericName = json.genericName;
       const subSections = json.subSections;
+      let dose = "";
       let imageUrl = "";
       let brandName = "";
       if (
@@ -103,6 +109,9 @@ module.exports.getDrug = (req, res) => {
         brandName =
           json.imageGroupMap[Object.keys(json.imageGroupMap)[0]].pillImages[0]
             .brandName;
+        dose =
+          json.imageGroupMap[Object.keys(json.imageGroupMap)[0]].pillImages[0]
+            .dosage;
       }
       const sections = [];
       for (const [index, object] of Object.entries(subSections)) {
@@ -122,6 +131,7 @@ module.exports.getDrug = (req, res) => {
           brandName,
           genericName,
           imageUrl,
+          dose,
           summary: headerSummary,
           sections
         };
@@ -147,11 +157,11 @@ module.exports.searchDrugs = (req, res) => {
       drugs.forEach(drug => {
         delete drug.imuid;
         delete drug.datasource;
-        if (drug.url.includes("?")) {
-          drug.url = `${baseUrl}${drug.url}&out=json`;
-        } else {
-          drug.url = `${baseUrl}${drug.url}?out=json`;
-        }
+        drug.brandName = drug.Term;
+        delete drug.Term;
+        drug.genericName = drug.GenericTerm;
+        delete drug.GenericTerm;
+        delete drug.url;
       });
       return res.send({ drugs });
     })
