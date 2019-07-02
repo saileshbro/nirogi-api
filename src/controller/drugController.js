@@ -77,12 +77,10 @@ module.exports.getCommonDrugs = (req, res) => {
               return res.send({ drugs: drugResponse });
             }
           })
-          .catch(_ =>
-            res.status(500).send({ error: "Internal server error." })
-          );
+          .catch(_ => res.status(500).send({ error: _ }));
       }
     })
-    .catch(_ => res.status(500).send({ error: "Internal server error." }));
+    .catch(_ => res.status(500).send({ error: _ }));
 };
 const baseUrl = "https://healthtools.aarp.org";
 module.exports.getDrug = (req, res) => {

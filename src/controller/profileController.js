@@ -103,7 +103,7 @@ module.exports.updateImage = async (req, res) => {
   try {
     const result = await pool.query(
       "UPDATE users SET imageUrl=? WHERE user_id=?",
-      [req.file.destination + req.file.filename, user_id]
+      [req.file.destination.replace("src/", "") + req.file.filename, user_id]
     );
     if (result.affectedRows == 1) {
       return res.send({
