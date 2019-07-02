@@ -80,6 +80,60 @@ module.exports.viewPosts = async (req, res) => {
     });
   }
 };
+module.exports.viewMyPosts = async (req, res) => {
+  try {
+    let sql = `SELECT
+      p.post_id,
+      p.title,
+      p.body,
+      p.views,
+      p.vote_count,
+      p.comment_count,
+      NOW()-p.created_at as created_at,
+      cat.category_id,
+      cat.category,
+      u.user_id,
+      u.name,
+      u.imageUrl,
+      v.value AS vote_status
+      FROM posts AS p
+      JOIN users AS u
+      ON p.user_id=u.user_id 
+      AND u.user_id=?
+      LEFT join category as cat
+      ON p.category_id = cat.category_id
+      LEFT JOIN votes AS v
+      ON v.post_id=p.post_id
+      AND v.user_id=? AND v.comment_id=? ORDER BY p.created_at DESC`;
+
+    let category = {};
+    const results = await pool.query(sql, [
+      req.user.user_id,
+      req.user.user_id,
+      0
+    ]);
+    if (results.length == 0) {
+      return res.status(404).json({
+        error: "No posts found"
+      });
+    }
+    results.forEach(rslt => {
+      category.category = rslt.category;
+      category.category_id = rslt.category_id;
+      delete rslt.category;
+      delete rslt.category_id;
+      rslt.category = category;
+      rslt.created_at = timeago(rslt.created_at);
+    });
+    return res.json({
+      posts: results
+    });
+  } catch (error) {
+    return res.status(500).json({
+      error: "Internal server eror"
+    });
+  }
+};
 module.exports.createPost = async (req, res) => {
   const post_title = req.body.title;
   const category_id = req.body.category_id;
