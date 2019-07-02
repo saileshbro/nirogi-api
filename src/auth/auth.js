@@ -2,10 +2,14 @@ const jwt = require("jsonwebtoken");
 const pool = require("../database/database");
 const auth = async (req, res, next) => {
   try {
-    if (!req.header("Authorization")) {
+    if (
+      !req.header("Authorization") ||
+      req.header("Authorization") === "Bearer null"
+    ) {
       return res.status(401).json({ error: "Please authenticate" });
     }
     const token = req.header("Authorization").replace("Bearer ", "");
+
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const user = await pool.query("SELECT * FROM users WHERE user_id=?", [
       decoded.user_id
