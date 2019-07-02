@@ -56,6 +56,7 @@ module.exports.viewPosts = async (req, res) => {
       ON v.post_id=p.post_id
       AND v.user_id=? AND v.comment_id=? ORDER BY p.created_at DESC`;
     }
+    let category = {};
     const results = await pool.query(sql, [req.user.user_id, 0]);
     if (results.length == 0) {
       return res.status(404).json({
@@ -63,6 +64,11 @@ module.exports.viewPosts = async (req, res) => {
       });
     }
     results.forEach(rslt => {
+      category.category = rslt.category;
+      category.category_id = rslt.category_id;
+      delete rslt.category;
+      delete rslt.category_id;
+      rslt.category = category;
       rslt.created_at = timeago(rslt.created_at);
     });
     return res.json({
@@ -173,9 +179,15 @@ module.exports.viewPost = async (req, res) => {
         error: "Internal server error"
       });
     }
+    let category = {};
+    category.category_id = result[0].category_id;
+    category.category = result[0].category;
+    delete result[0].category_id;
+    delete result[0].category;
     result[0].created_at = timeago(result[0].created_at);
     return res.json({
       ...result[0],
+      category,
       comments
     });
   } catch (error) {

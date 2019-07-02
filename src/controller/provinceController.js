@@ -2,7 +2,7 @@ const pool = require("../database/database");
 module.exports.getProvinces = async (req, res) => {
   try {
     const result = await pool.query(
-      "SELECT title,province_id,imageUrl FROM province"
+      "SELECT title,province_id,imageUrl FROM province ORDER BY title DESC"
     );
     if (result.length == 0) {
       return res.status(404).send({ error: "No provinces found!" });
