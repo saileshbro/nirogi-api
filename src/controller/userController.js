@@ -3,7 +3,7 @@ const bcrypt = require("bcryptjs");
 const validator = require("validator");
 const jwt = require("jsonwebtoken");
 const nameValidator = require("../functions/validateName");
-const passwordValidator = require('../functions/validatePassword');
+const passwordValidator = require("../functions/validatePassword");
 const randomString = require("../functions/randomString");
 module.exports.signup = async (req, res) => {
   const user = req.body;
@@ -38,7 +38,8 @@ module.exports.signup = async (req, res) => {
     }
     if (!passwordValidator.isPasswordValid(user.password)) {
       return res.status(406).json({
-        error: "Required: Minimum eight characters, at least one letter, one number and one special character."
+        error:
+          "Required: Minimum eight characters, at least one letter, one number and one special character."
       });
     }
     const users = await pool.query("SELECT * FROM users WHERE email=?", [
@@ -54,11 +55,12 @@ module.exports.signup = async (req, res) => {
       parseInt(process.env.SALT_ROUNDS)
     );
     const result = await pool.query(
-      "INSERT INTO users SET name=?,email=?,password=?",
-      [user.name, user.email, user.password]
+      "INSERT INTO users SET name=?,email=?,password=?,imageUrl=?",
+      [user.name, user.email, user.password, "public/images/profile.png"]
     );
 
-    const token = await jwt.sign({
+    const token = await jwt.sign(
+      {
         user_id: result.insertId
       },
       process.env.JWT_SECRET
@@ -106,7 +108,8 @@ module.exports.login = async (req, res) => {
         error: "Invalid email or password"
       });
     }
-    const token = await jwt.sign({
+    const token = await jwt.sign(
+      {
         user_id: result[0].user_id
       },
       process.env.JWT_SECRET
@@ -155,7 +158,8 @@ module.exports.changepw = async (req, res) => {
     }
     if (!passwordValidator.isPasswordValid(newpw)) {
       return res.status(406).json({
-        error: "Required: Minimum eight characters, at least one letter, one number and one special character."
+        error:
+          "Required: Minimum eight characters, at least one letter, one number and one special character."
       });
     }
     newpw = await bcrypt.hash(newpw, parseInt(process.env.SALT_ROUNDS));
@@ -193,11 +197,9 @@ module.exports.forgot = async (req, res) => {
     ]);
     // res.send(result);
     if (result.length == 0) {
-      return res
-        .status(403)
-        .send({
-          error: "Email not associated to any account"
-        });
+      return res.status(403).send({
+        error: "Email not associated to any account"
+      });
     } else if (result.length == 1) {
       // send reset email here
       const update = await pool.query(

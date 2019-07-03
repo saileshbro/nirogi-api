@@ -432,6 +432,10 @@ module.exports.createComment = async (req, res) => {
       [post_id, req.user.user_id, comment]
     );
     if (result.affectedRows == 1) {
+      await pool.query(
+        "UPDATE posts SET comment_count=comment_count+1 WHERE post_id=?",
+        [post_id]
+      );
       return res.send({
         comment_id: result.insertId,
         user_id: req.user.user_id.toString(),
@@ -512,7 +516,7 @@ module.exports.getComments = async (req, res) => {
       AND p.post_id=?
       LEFT JOIN votes AS v
       ON v.comment_id=c.comment_id
-      AND v.user_id=? ORDER BY c.created_at ASC`;
+      AND v.user_id=? ORDER BY c.created_at DESC`;
     } else if (sort === "votes") {
       sql = `SELECT
       u.user_id,
