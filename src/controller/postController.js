@@ -2,11 +2,6 @@ const pool = require("../database/database");
 const timeago = require("../functions/timeAgo");
 module.exports.viewPosts = async (req, res) => {
   const sort = req.query.sort;
-
-  // sort by most popular and sort by recent
-  // here send response according to query params
-  // send particular post related informations
-  // recent by default
   try {
     let sql = "";
     if (sort === "popular") {
@@ -199,30 +194,6 @@ module.exports.viewPost = async (req, res) => {
       AND v.user_id=? AND v.comment_id=?`,
       [post_id, req.user.user_id, 0]
     );
-    const comments = await pool.query(
-      `SELECT
-      u.user_id,
-      u.name,
-      u.imageUrl,
-      c.comment_id,
-      c.comment,
-      c.vote_count,
-      NOW()-c.created_at as created_at,
-      v.value AS vote_status
-      FROM comments AS c
-      JOIN users AS u
-      ON c.user_id=u.user_id
-      JOIN posts AS p
-      ON p.post_id=c.post_id
-      AND p.post_id=?
-      LEFT JOIN votes AS v
-      ON v.comment_id=c.comment_id
-      AND v.user_id=? ORDER BY c.created_at ASC`,
-      [post_id, req.user.user_id]
-    );
-    if (comments.length != 0) {
-      comments.forEach(rslt => (rslt.created_at = timeago(rslt.created_at)));
-    }
     if (result.length == 0) {
       return res.status(404).json({
         error: "Post not found."
@@ -241,8 +212,7 @@ module.exports.viewPost = async (req, res) => {
     result[0].created_at = timeago(result[0].created_at);
     return res.json({
       ...result[0],
-      category,
-      comments
+      category
     });
   } catch (error) {
     return res.status(500).json({

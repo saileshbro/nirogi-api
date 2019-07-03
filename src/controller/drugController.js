@@ -63,7 +63,7 @@ module.exports.getCommonDrugs = (req, res) => {
                 genericName,
                 imageUrl,
                 dose,
-                // sections,
+                sections,
                 summary: headerSummary
               });
             }
@@ -74,6 +74,7 @@ module.exports.getCommonDrugs = (req, res) => {
           })
           .then(drugResponse => {
             if (drugResponse) {
+              drugResponse.sort((a, b) => (a.brandName < b.brandName ? -1 : 1));
               return res.send({ drugs: drugResponse });
             }
           })
