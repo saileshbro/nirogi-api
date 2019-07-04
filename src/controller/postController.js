@@ -271,10 +271,6 @@ module.exports.createPost = async (req, res) => {
 module.exports.viewPost = async (req, res) => {
   try {
     const post_id = req.params.post_id;
-    const post = await pool.query(
-      "UPDATE posts SET views=views+1 WHERE post_id=?",
-      [post_id]
-    );
     const result = await pool.query(
       `SELECT
       p.post_id,
@@ -307,7 +303,7 @@ module.exports.viewPost = async (req, res) => {
         error: "Post not found."
       });
     }
-    if (!(post && result)) {
+    if (!result) {
       return res.status(500).json({
         error: "Internal server error"
       });
@@ -327,6 +323,21 @@ module.exports.viewPost = async (req, res) => {
     return res.status(500).json({
       error: "Internal server error."
     });
+  }
+};
+module.exports.incrementView = async (req, res) => {
+  try {
+    const result = await pool.query(
+      "UPDATE posts SET views=views+1 WHERE post_id=?",
+      [req.params.post_id]
+    );
+    if (result) {
+      return res.send({ message: "increment" });
+    } else {
+      throw "Error occured";
+    }
+  } catch (error) {
+    return res.setStatus(500).send({ error: error });
   }
 };
 module.exports.upVotePost = async (req, res) => {
