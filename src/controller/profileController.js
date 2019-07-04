@@ -85,12 +85,7 @@ module.exports.updateProfile = async (req, res) => {
       [email.trim(), name.trim(), address.trim(), user_id]
     );
     if (result.affectedRows == 1) {
-      return res.send({
-        user_id,
-        name,
-        email,
-        address
-      });
+      return res.send({ message: "Updated successfully." });
     }
   } catch (error) {
     return res.status(500).send({
