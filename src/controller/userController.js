@@ -195,20 +195,18 @@ module.exports.forgot = async (req, res) => {
     const result = await pool.query("SELECT * FROM users WHERE email=?", [
       email
     ]);
-    // res.send(result);
     if (result.length == 0) {
       return res.status(403).send({
         error: "Email not associated to any account"
       });
     } else if (result.length == 1) {
-      // send reset email here
-      const update = await pool.query(
-        "UPDATE users SET fcode=? WHERE email=?",
-        [random, email]
-      );
-      // send mail here
+      await pool.query("UPDATE users SET fcode=? WHERE email=?", [
+        random,
+        email
+      ]);
       return res.send({
-        fcode: random
+        fcode: random,
+        message: "Reset link sent to your email."
       });
     }
   } catch (error) {

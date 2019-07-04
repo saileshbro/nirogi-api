@@ -51,7 +51,6 @@ module.exports.viewPosts = async (req, res) => {
       ON v.post_id=p.post_id
       AND v.user_id=? AND v.comment_id=? ORDER BY p.created_at DESC`;
     }
-    let category = {};
     const results = await pool.query(sql, [req.user.user_id, 0]);
     if (results.length == 0) {
       return res.status(404).json({
@@ -59,8 +58,10 @@ module.exports.viewPosts = async (req, res) => {
       });
     }
     results.forEach(rslt => {
-      category.category = rslt.category;
-      category.category_id = rslt.category_id;
+      const category = {
+        category: rslt.category,
+        category_id: rslt.category_id
+      };
       delete rslt.category;
       delete rslt.category_id;
       rslt.category = category;
@@ -101,7 +102,6 @@ module.exports.viewMyPosts = async (req, res) => {
       ON v.post_id=p.post_id
       AND v.user_id=? AND v.comment_id=? ORDER BY p.created_at DESC`;
 
-    let category = {};
     const results = await pool.query(sql, [
       req.user.user_id,
       req.user.user_id,
@@ -113,8 +113,10 @@ module.exports.viewMyPosts = async (req, res) => {
       });
     }
     results.forEach(rslt => {
-      category.category = rslt.category;
-      category.category_id = rslt.category_id;
+      const category = {
+        category: rslt.category,
+        category_id: rslt.category_id
+      };
       delete rslt.category;
       delete rslt.category_id;
       rslt.category = category;
@@ -131,7 +133,7 @@ module.exports.viewMyPosts = async (req, res) => {
 };
 module.exports.createPost = async (req, res) => {
   const post_title = req.body.title;
-  const category_id = req.body.category_id;
+  const category_id = req.body.category.category_id;
   const post_body = req.body.body;
   if (post_title.length == 0 || post_body.length == 0) {
     return res.status(403).send({
@@ -143,12 +145,10 @@ module.exports.createPost = async (req, res) => {
       "INSERT INTO posts SET user_id=?,category_id=?,title=?,body=?",
       [req.user.user_id, category_id, post_title, post_body]
     );
+
     if (result) {
       return res.json({
-        post_id: result.insertId,
-        title: post_title,
-        body: post_body,
-        category_id: category_id
+        message: "Sucessfully created."
       });
     } else {
       return res.status(500).json({
@@ -212,6 +212,7 @@ module.exports.viewPost = async (req, res) => {
     result[0].created_at = timeago(result[0].created_at);
     return res.json({
       ...result[0],
+      can_modify_post: result[0].user_id === req.user.user_id,
       category
     });
   } catch (error) {
@@ -359,7 +360,7 @@ module.exports.updatePost = async (req, res) => {
   const user_id = req.user.user_id;
   if (!(post_title && post_body)) {
     return res.status(403).send({
-      error: "Unable to create a post."
+      error: "Unable to update a post."
     });
   }
   try {
@@ -437,10 +438,7 @@ module.exports.createComment = async (req, res) => {
         [post_id]
       );
       return res.send({
-        comment_id: result.insertId,
-        user_id: req.user.user_id.toString(),
-        post_id,
-        comment
+        message: "Sucessfully created."
       });
     } else {
       return res.status(403).send({
@@ -543,7 +541,10 @@ module.exports.getComments = async (req, res) => {
         error: "No comments found."
       });
     } else {
-      result.forEach(rslt => (rslt.created_at = timeago(rslt.created_at)));
+      result.forEach(rslt => {
+        rslt.created_at = timeago(rslt.created_at);
+        rslt.can_modify_comment = rslt.user_id === req.user.user_id;
+      });
       return res.send({
         comments: result
       });
