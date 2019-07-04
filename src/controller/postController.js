@@ -17,6 +17,7 @@ module.exports.viewPosts = async (req, res) => {
       cat.category,
       u.user_id,
       u.name,
+      u.address,
       u.imageUrl,
       v.value AS vote_status
       FROM posts AS p
@@ -40,6 +41,7 @@ module.exports.viewPosts = async (req, res) => {
       cat.category,
       u.user_id,
       u.name,
+      u.address,
       u.imageUrl,
       v.value AS vote_status
       FROM posts AS p
@@ -91,6 +93,7 @@ module.exports.viewMyPosts = async (req, res) => {
       u.user_id,
       u.name,
       u.imageUrl,
+      u.address,
       v.value AS vote_status
       FROM posts AS p
       JOIN users AS u
@@ -182,6 +185,7 @@ module.exports.viewPost = async (req, res) => {
       u.user_id,
       u.name,
       u.imageUrl,
+      u.address,
       v.value AS vote_status
       FROM posts AS p
       JOIN users AS u
@@ -460,6 +464,8 @@ module.exports.getComment = async (req, res) => {
       u.user_id,
       u.name,
       u.imageUrl,
+      u.address,
+      p.post_id,
       c.comment_id,
       c.comment,
       c.vote_count,
@@ -501,6 +507,8 @@ module.exports.getComments = async (req, res) => {
       u.user_id,
       u.name,
       u.imageUrl,
+      u.address,
+      p.post_id,
       c.comment_id,
       c.comment,
       c.vote_count,
@@ -520,6 +528,8 @@ module.exports.getComments = async (req, res) => {
       u.user_id,
       u.name,
       u.imageUrl,
+      u.address,
+      p.post_id,
       c.comment_id,
       c.comment,
       c.vote_count,
