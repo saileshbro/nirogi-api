@@ -56,7 +56,7 @@ module.exports.viewPosts = async (req, res) => {
     const results = await pool.query(sql, [req.user.user_id, 0]);
     if (results.length == 0) {
       return res.status(404).json({
-        error: "No posts found"
+        posts: []
       });
     }
     results.forEach(rslt => {
@@ -112,7 +112,7 @@ module.exports.viewMyPosts = async (req, res) => {
     ]);
     if (results.length == 0) {
       return res.status(404).json({
-        error: "No posts found"
+        posts: []
       });
     }
     results.forEach(rslt => {
@@ -164,7 +164,7 @@ module.exports.viewUserPosts = async (req, res) => {
     const results = await pool.query(sql, [user_id, user_id, 0]);
     if (results.length == 0) {
       return res.status(404).json({
-        error: "No posts found"
+        posts: []
       });
     }
     results.forEach(rslt => {
@@ -216,7 +216,7 @@ module.exports.viewCategoryPosts = async (req, res) => {
     const results = await pool.query(sql, [category_id, req.user.user_id, 0]);
     if (results.length == 0) {
       return res.status(404).json({
-        error: "No posts found"
+        posts: []
       });
     }
     results.forEach(rslt => {
@@ -652,7 +652,7 @@ module.exports.getComments = async (req, res) => {
     const result = await pool.query(sql, [post_id, req.user.user_id]);
     if (result.length == 0) {
       return res.status(404).json({
-        error: "No comments found."
+        comments: []
       });
     } else {
       result.forEach(rslt => {
