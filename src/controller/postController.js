@@ -367,7 +367,7 @@ module.exports.upVotePost = async (req, res) => {
           [post_id]
         );
         return res.send({
-          message: "Upvoted"
+          message: 1
         });
       } else {
         return res.status(403).send({
@@ -390,7 +390,7 @@ module.exports.upVotePost = async (req, res) => {
             [post_id]
           );
           return res.send({
-            message: "Upvoted"
+            message: 1
           });
         } else {
           return res.status(403).send({
@@ -433,7 +433,7 @@ module.exports.downVotePost = async (req, res) => {
           [post_id]
         );
         return res.send({
-          message: "Downvoted"
+          message: -1
         });
       } else {
         return res.status(403).send({
@@ -457,7 +457,7 @@ module.exports.downVotePost = async (req, res) => {
             [post_id]
           );
           return res.send({
-            message: "Downvoted"
+            message: -1
           });
         } else {
           return res.status(403).send({
@@ -780,7 +780,7 @@ module.exports.upVoteComment = async (req, res) => {
           [comment_id]
         );
         return res.send({
-          message: "Upvoted"
+          message: 1
         });
       } else {
         return res.status(403).send({
@@ -803,7 +803,7 @@ module.exports.upVoteComment = async (req, res) => {
             [comment_id]
           );
           return res.send({
-            message: "Upvoted"
+            message: 1
           });
         } else {
           return res.status(403).send({
@@ -846,7 +846,7 @@ module.exports.downVoteComment = async (req, res) => {
           [comment_id]
         );
         return res.send({
-          message: "Downvoted"
+          message: -1
         });
       } else {
         return res.status(403).send({
@@ -869,7 +869,7 @@ module.exports.downVoteComment = async (req, res) => {
             [comment_id]
           );
           return res.send({
-            message: "Downvoted"
+            message: -1
           });
         } else {
           return res.status(403).send({
