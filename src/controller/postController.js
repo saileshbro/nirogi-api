@@ -537,6 +537,20 @@ module.exports.deletePost = async (req, res) => {
     });
   }
 };
+module.exports.getPostsVoteCount = async (req, res) => {
+  const post_id = req.params.post_id;
+  try {
+    const result = await pool.query(
+      "SELECT vote_count FROM posts WHERE post_id=?",
+      [post_id]
+    );
+    if (result.length == 0) {
+      return res.status(404).send({ error: "No post found" });
+    } else return res.json({ message: result[0].vote_count });
+  } catch (error) {
+    return res.status(500).send({ error: "Internal server error." });
+  }
+};
 
 module.exports.createComment = async (req, res) => {
   const post_id = req.params.post_id;
@@ -882,5 +896,19 @@ module.exports.downVoteComment = async (req, res) => {
     return res.status(500).send({
       error: "Internal server error."
     });
+  }
+};
+module.exports.getCommentVoteCount = async (req, res) => {
+  const comment_id = req.params.comment_id;
+  try {
+    const result = await pool.query(
+      "SELECT vote_count FROM comments WHERE comment_id=?",
+      [comment_id]
+    );
+    if (result.length == 0) {
+      return res.status(404).send({ error: "No comment found" });
+    } else return res.json({ message: result[0].vote_count });
+  } catch (error) {
+    return res.status(500).send({ error: "Internal server error." });
   }
 };

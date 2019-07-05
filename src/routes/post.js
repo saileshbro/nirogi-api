@@ -9,6 +9,7 @@ router.get(
   auth,
   postController.viewCategoryPosts
 );
+router.get("/post/:post_id/votecount", auth, postController.getPostsVoteCount);
 router.post("/posts", auth, postController.createPost);
 router.get("/post/:post_id", auth, postController.viewPost);
 router.post("/post/:post_id/inc", auth, postController.incrementView);
@@ -17,6 +18,7 @@ router.post("/post/:post_id/downvote", auth, postController.downVotePost);
 router.patch("/post/:post_id", auth, postController.updatePost);
 router.delete("/post/:post_id", auth, postController.deletePost);
 router.post("/post/:post_id/comment", auth, postController.createComment);
+router.get("/post/:post_id/comments", auth, postController.getComments);
 router.get("/post/:post_id/comments", auth, postController.getComments);
 router.get(
   "/post/:post_id/comment/:comment_id",
@@ -42,5 +44,10 @@ router.post(
   "/post/:post_id/comment/:comment_id/downvote",
   auth,
   postController.downVoteComment
+);
+router.get(
+  "/post/:post_id/comment/:comment_id/votecount",
+  auth,
+  postController.getCommentVoteCount
 );
 module.exports = router;
