@@ -1,7 +1,8 @@
 const pool = require("../database/database");
 module.exports.addBmiRecord = async (req, res) => {
     const user_id = req.user.user_id;
-    const bmi = req.body.bmi;
+    const bmi = req.body.value;
+    console.log(req.body);
     try {
         const insert = await pool.query('INSERT INTO bmi SET user_id=?,value=?', [user_id, bmi]);
         if (insert.affectedRows === 1) {
@@ -12,6 +13,7 @@ module.exports.addBmiRecord = async (req, res) => {
     } catch (error) {
         return res.status(500).json({ error: "Internal server error." });
     }
+
 };
 module.exports.getBmiHistory = async (req, res) => {
     const user_id = req.user.user_id;
@@ -21,6 +23,6 @@ module.exports.getBmiHistory = async (req, res) => {
             return res.status(404).send({ error: "No records found" });
         } else return res.send({ bmi: result });
     } catch (error) {
-        return res.status(500).send({ error: "Internal server error." });
+        return res.status(500).send({ error: "Internal server error." }); sara
     }
 };
