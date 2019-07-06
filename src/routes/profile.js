@@ -63,7 +63,7 @@ const profileController = require("../controller/profileController");
 router.get("/users", auth, profileController.getProfiles);
 router.get("/users/me", auth, profileController.myProfile);
 router.patch("/users/me", auth, profileController.updateProfile);
-router.patch(
+router.post(
   "/users/me/avatar",
   auth,
   upload,
