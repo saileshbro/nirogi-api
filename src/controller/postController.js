@@ -752,6 +752,10 @@ module.exports.deleteComment = async (req, res) => {
       [post_id, user_id, comment_id]
     );
     if (result.affectedRows == 1) {
+      await pool.query(
+        "UPDATE posts SET comment_count=comment_count-1 WHERE post_id=?",
+        [post_id]
+      );
       return res.send({
         message: "Sucessfully deleted."
       });
