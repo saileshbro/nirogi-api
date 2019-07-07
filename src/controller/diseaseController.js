@@ -22,7 +22,7 @@ module.exports.getSearchDiseases = async (req, res) => {
   const query = req.params.search;
   try {
     const results = await pool.query(
-      `SELECT disease_id,disease,imageUrl,description FROM diseases WHERE disease LIKE "${query}%" ORDER BY disease ASC`
+      `SELECT disease_id,disease,imageUrl,description FROM diseases WHERE disease LIKE "%${query}%" ORDER BY disease ASC`
     );
     if (results.length === 0) {
       return res.status(404).json({
