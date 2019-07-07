@@ -25,7 +25,7 @@ module.exports.getBmiHistory = async (req, res) => {
       [user_id]
     );
     if (result.length == 0) {
-      return res.status(404).send({ error: "No records found" });
+      return res.status(404).send({ bmi: [] });
     } else {
       const tosend = result.map(rslt => {
         const d = Date.parse(rslt.created_at);
@@ -41,6 +41,21 @@ module.exports.getBmiHistory = async (req, res) => {
       return res.send({
         bmi: tosend
       });
+    }
+  } catch (error) {
+    return res.status(500).send({ error: "Internal server error." });
+  }
+};
+module.exports.deleteBmiHistory = async (req, res) => {
+  const user_id = req.user.user_id;
+  try {
+    const result = await pool.query("DELETE FROM bmi WHERE user_id=?", [
+      user_id
+    ]);
+    if (result.affectedRows == 0) {
+      return res.status(404).send({ error: "No records found" });
+    } else {
+      return res.json({ message: "sucessfully cleared" });
     }
   } catch (error) {
     return res.status(500).send({ error: "Internal server error." });
