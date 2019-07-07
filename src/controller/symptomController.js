@@ -16,6 +16,26 @@ module.exports.getSymptoms = async (req, res) => {
         });
     }
 };
+module.exports.getSearchSymptoms = async (req, res) => {
+    const query = req.params.search;
+    try {
+        const results = await pool.query(
+            `SELECT symptom_id,symptom,imageUrl,description FROM symptoms WHERE symptom LIKE "${query}%" ORDER BY symptom ASC`
+        );
+        if (results.length === 0) {
+            return res.status(404).json({
+                error: "Symptoms not found"
+            });
+        }
+        return res.json({
+            symptoms: results
+        });
+    } catch (error) {
+        return res.status(500).json({
+            error: "Internal server error"
+        });
+    }
+};
 module.exports.getSymptom = async (req, res) => {
     const symptom_id = req.params.symptom_id;
     try {
