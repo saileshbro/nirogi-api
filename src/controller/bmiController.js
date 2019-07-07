@@ -2,7 +2,6 @@ const pool = require("../database/database");
 module.exports.addBmiRecord = async (req, res) => {
   const user_id = req.user.user_id;
   const bmi = req.body.value;
-  console.log(req.body);
   try {
     const insert = await pool.query("INSERT INTO bmi SET user_id=?,value=?", [
       user_id,

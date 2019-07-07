@@ -26,7 +26,7 @@ module.exports.getSearchDiseases = async (req, res) => {
     );
     if (results.length === 0) {
       return res.status(404).json({
-        error: "Diseases not found"
+        diseases: []
       });
     }
     return res.json({

@@ -60,6 +60,7 @@ module.exports.viewPosts = async (req, res) => {
       });
     }
     results.forEach(rslt => {
+      rslt.can_modify_post = rslt.user_id === req.user.user_id;
       const category = {
         category: rslt.category,
         category_id: rslt.category_id
@@ -116,6 +117,7 @@ module.exports.viewMyPosts = async (req, res) => {
       });
     }
     results.forEach(rslt => {
+      rslt.can_modify_post = rslt.user_id === req.user.user_id;
       const category = {
         category: rslt.category,
         category_id: rslt.category_id
@@ -168,6 +170,7 @@ module.exports.viewUserPosts = async (req, res) => {
       });
     }
     results.forEach(rslt => {
+      rslt.can_modify_post = rslt.user_id === req.user.user_id;
       const category = {
         category: rslt.category,
         category_id: rslt.category_id
@@ -220,6 +223,7 @@ module.exports.viewCategoryPosts = async (req, res) => {
       });
     }
     results.forEach(rslt => {
+      rslt.can_modify_post = rslt.user_id === req.user.user_id;
       const category = {
         category: rslt.category,
         category_id: rslt.category_id
@@ -353,13 +357,13 @@ module.exports.upVotePost = async (req, res) => {
       });
     }
     const result = await pool.query(
-      "SELECT * FROM votes WHERE post_id=? AND user_id=?",
-      [post_id, req.user.user_id]
+      "SELECT * FROM votes WHERE post_id=? AND user_id=? AND comment_id=?",
+      [post_id, req.user.user_id, 0]
     );
     if (result.length == 0) {
       const insert = await pool.query(
-        "INSERT INTO votes SET post_id=?,user_id=?,value=?",
-        [post_id, req.user.user_id, 1]
+        "INSERT INTO votes SET post_id=?,user_id=?,comment_id=?,value=?",
+        [post_id, req.user.user_id, 0, 1]
       );
       if (insert) {
         await pool.query(
@@ -381,8 +385,8 @@ module.exports.upVotePost = async (req, res) => {
         });
       } else if (result[0].value == -1) {
         const update = await pool.query(
-          "UPDATE votes SET value=? WHERE post_id=? AND user_id=?",
-          [1, post_id, req.user.user_id]
+          "UPDATE votes SET value=? WHERE post_id=? AND user_id=? AND comment_id=?",
+          [1, post_id, req.user.user_id, 0]
         );
         if (update) {
           await pool.query(
@@ -418,14 +422,14 @@ module.exports.downVotePost = async (req, res) => {
       });
     }
     const result = await pool.query(
-      "SELECT * FROM votes WHERE post_id=? AND user_id=?",
-      [post_id, req.user.user_id]
+      "SELECT * FROM votes WHERE post_id=? AND user_id=? AND comment_id=?",
+      [post_id, req.user.user_id, 0]
     );
 
     if (result.length == 0) {
       const insert = await pool.query(
-        "INSERT INTO votes SET post_id=?,user_id=?,value=-1",
-        [post_id, req.user.user_id, -1]
+        "INSERT INTO votes SET post_id=?,user_id=?,comment_id=?,value=?",
+        [post_id, req.user.user_id, 0, -1]
       );
       if (insert) {
         await pool.query(
@@ -447,8 +451,8 @@ module.exports.downVotePost = async (req, res) => {
         });
       } else if (result[0].value == 1) {
         const update = await pool.query(
-          "UPDATE votes SET value=? WHERE post_id=? AND user_id=?",
-          [-1, post_id, req.user.user_id]
+          "UPDATE votes SET value=? WHERE post_id=? AND user_id=? AND comment_id=?",
+          [-1, post_id, req.user.user_id, 0]
         );
 
         if (update) {
@@ -477,6 +481,7 @@ module.exports.updatePost = async (req, res) => {
   const post_title = req.body.title;
   const post_body = req.body.body;
   const user_id = req.user.user_id;
+  const category_id = req.body.category.category_id;
   if (!(post_title && post_body)) {
     return res.status(403).send({
       error: "Unable to update a post."
@@ -484,8 +489,8 @@ module.exports.updatePost = async (req, res) => {
   }
   try {
     const result = await pool.query(
-      "UPDATE posts SET title=?,body=? WHERE post_id=? AND user_id=?",
-      [post_title, post_body, post_id, user_id]
+      "UPDATE posts SET title=?,body=?,category_id=? WHERE post_id=? AND user_id=?",
+      [post_title, post_body, category_id, post_id, user_id]
     );
     if (!result) {
       return res.status(404).send({
