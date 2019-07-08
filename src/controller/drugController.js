@@ -78,10 +78,10 @@ module.exports.getCommonDrugs = (req, res) => {
               return res.send({ drugs: drugResponse });
             }
           })
-          .catch(_ => res.status(500).send({ error: _ }));
+          .catch(_ => res.status(500).send({ error: "Network Error." }));
       }
     })
-    .catch(_ => res.status(500).send({ error: _ }));
+    .catch(_ => res.status(500).send({ error: "Network Error." }));
 };
 
 module.exports.getDrug = (req, res) => {
@@ -231,8 +231,8 @@ module.exports.searchDrugs = (req, res) => {
               return res.send({ drugs: drugResponse });
             }
           })
-          .catch(_ => res.status(500).send({ error: _ }));
+          .catch(_ => res.status(500).send({ error: "Network Error." }));
       }
     })
-    .catch(_ => res.status(500).send({ error: "out" }));
+    .catch(_ => res.status(500).send({ error: "Network Error." }));
 };
