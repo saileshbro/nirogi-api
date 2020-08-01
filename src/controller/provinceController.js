@@ -5,11 +5,18 @@ module.exports.getProvinces = async (req, res) => {
       "SELECT title,province_id,imageUrl FROM province ORDER BY title DESC"
     );
     if (result.length == 0) {
-      return res.status(404).send({ error: "No provinces found!" });
+      return res.status(404).send({
+        error: "No provinces found!"
+      });
     }
-    return res.send({ provinces: result });
+    return res.send({
+      provinces: result
+    });
   } catch (error) {
-    return res.send(500).send({ error: "Internal server error." });
+    console.log(error);
+    return res.send(500).send({
+      error: "Internal server error."
+    });
   }
 };
 module.exports.addProvince = async (req, res) => {
@@ -22,11 +29,19 @@ module.exports.addProvince = async (req, res) => {
       [title, imageUrl, body]
     );
     if (insert.affectedRows == 1) {
-      return res.send({ id: insert.insertId, message: "Sucessfully inserted" });
+      return res.send({
+        id: insert.insertId,
+        message: "Sucessfully inserted"
+      });
     }
-    return res.send(406).send({ error: "Unable to insert province" });
+    return res.send(406).send({
+      error: "Unable to insert province"
+    });
   } catch (error) {
-    return res.status(500).send({ error: "Internal server error." });
+    console.log(error);
+    return res.status(500).send({
+      error: "Internal server error."
+    });
   }
 };
 module.exports.getProvince = async (req, res) => {
@@ -37,10 +52,15 @@ module.exports.getProvince = async (req, res) => {
       [province_id]
     );
     if (result.length == 0) {
-      return res.status(404).send({ error: "Province not found" });
+      return res.status(404).send({
+        error: "Province not found"
+      });
     }
     return res.send(result[0]);
   } catch (error) {
-    return res.status(500).send({ error: "Internal server error." });
+    console.log(error);
+    return res.status(500).send({
+      error: "Internal server error."
+    });
   }
 };

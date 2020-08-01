@@ -74,6 +74,7 @@ module.exports.viewPosts = async (req, res) => {
       posts: results
     });
   } catch (error) {
+    console.log(error);
     return res.status(500).json({
       error: "Internal server eror"
     });
@@ -98,7 +99,7 @@ module.exports.viewMyPosts = async (req, res) => {
       v.value AS vote_status
       FROM posts AS p
       JOIN users AS u
-      ON p.user_id=u.user_id 
+      ON p.user_id=u.user_id
       AND u.user_id=?
       LEFT join category as cat
       ON p.category_id = cat.category_id
@@ -131,6 +132,7 @@ module.exports.viewMyPosts = async (req, res) => {
       posts: results
     });
   } catch (error) {
+    console.log(error);
     return res.status(500).json({
       error: "Internal server eror"
     });
@@ -155,7 +157,7 @@ module.exports.viewUserPosts = async (req, res) => {
       v.value AS vote_status
       FROM posts AS p
       JOIN users AS u
-      ON p.user_id=u.user_id 
+      ON p.user_id=u.user_id
       AND u.user_id=?
       LEFT join category as cat
       ON p.category_id = cat.category_id
@@ -184,6 +186,7 @@ module.exports.viewUserPosts = async (req, res) => {
       posts: results
     });
   } catch (error) {
+    console.log(error);
     return res.status(500).json({
       error: "Internal server eror"
     });
@@ -208,9 +211,9 @@ module.exports.viewCategoryPosts = async (req, res) => {
       v.value AS vote_status
       FROM posts AS p
       JOIN users AS u
-      ON p.user_id=u.user_id 
+      ON p.user_id=u.user_id
       INNER join category as cat
-      ON p.category_id = cat.category_id 
+      ON p.category_id = cat.category_id
       AND cat.category_id=?
       LEFT JOIN votes AS v
       ON v.post_id=p.post_id
@@ -237,6 +240,7 @@ module.exports.viewCategoryPosts = async (req, res) => {
       posts: results
     });
   } catch (error) {
+    console.log(error);
     return res.status(500).json({
       error: "Internal server eror"
     });
@@ -267,6 +271,7 @@ module.exports.createPost = async (req, res) => {
       });
     }
   } catch (error) {
+    console.log(error);
     return res.status(500).json({
       error: "Internal server error"
     });
@@ -324,6 +329,7 @@ module.exports.viewPost = async (req, res) => {
       category
     });
   } catch (error) {
+    console.log(error);
     return res.status(500).json({
       error: "Internal server error."
     });
@@ -336,12 +342,17 @@ module.exports.incrementView = async (req, res) => {
       [req.params.post_id]
     );
     if (result) {
-      return res.send({ message: "increment" });
+      return res.send({
+        message: "increment"
+      });
     } else {
       throw "Error occured";
     }
   } catch (error) {
-    return res.setStatus(500).send({ error: error });
+    console.log(error);
+    return res.setStatus(500).send({
+      error: error
+    });
   }
 };
 module.exports.upVotePost = async (req, res) => {
@@ -404,6 +415,7 @@ module.exports.upVotePost = async (req, res) => {
       }
     }
   } catch (error) {
+    console.log(error);
     return res.status(500).send({
       error: "Internal server error."
     });
@@ -471,6 +483,7 @@ module.exports.downVotePost = async (req, res) => {
       }
     }
   } catch (error) {
+    console.log(error);
     return res.status(500).send({
       error: "Internal server error."
     });
@@ -508,6 +521,7 @@ module.exports.updatePost = async (req, res) => {
       });
     }
   } catch (error) {
+    console.log(error);
     return res.status(500).send({
       error: "Internal server error."
     });
@@ -537,6 +551,7 @@ module.exports.deletePost = async (req, res) => {
       });
     }
   } catch (error) {
+    console.log(error);
     return res.status(500).send({
       error: "Internal server error."
     });
@@ -550,10 +565,17 @@ module.exports.getPostsVoteCount = async (req, res) => {
       [post_id]
     );
     if (result.length == 0) {
-      return res.status(404).send({ error: "No post found" });
-    } else return res.json({ message: result[0].vote_count });
+      return res.status(404).send({
+        error: "No post found"
+      });
+    } else return res.json({
+      message: result[0].vote_count
+    });
   } catch (error) {
-    return res.status(500).send({ error: "Internal server error." });
+    console.log(error);
+    return res.status(500).send({
+      error: "Internal server error."
+    });
   }
 };
 
@@ -584,6 +606,7 @@ module.exports.createComment = async (req, res) => {
       });
     }
   } catch (error) {
+    console.log(error);
     return res.status(500).send({
       error: "Internal server error."
     });
@@ -626,6 +649,7 @@ module.exports.getComment = async (req, res) => {
       return res.send(result[0]);
     }
   } catch (error) {
+    console.log(error);
     return res.status(500).send({
       error: "Internal server error"
     });
@@ -694,6 +718,7 @@ module.exports.getComments = async (req, res) => {
       });
     }
   } catch (error) {
+    console.log(error);
     return res.status(500).send({
       error: "Internal server error."
     });
@@ -733,6 +758,7 @@ module.exports.editComment = async (req, res) => {
       });
     }
   } catch (error) {
+    console.log(error);
     return res.status(500).send({
       error: "Internal server error."
     });
@@ -770,6 +796,7 @@ module.exports.deleteComment = async (req, res) => {
       });
     }
   } catch (error) {
+    console.log(error);
     return res.status(500).send({
       error: "Internal server error."
     });
@@ -836,6 +863,7 @@ module.exports.upVoteComment = async (req, res) => {
       }
     }
   } catch (error) {
+    console.log(error);
     return res.status(500).send({
       error: "Internal server error."
     });
@@ -902,6 +930,7 @@ module.exports.downVoteComment = async (req, res) => {
       }
     }
   } catch (error) {
+    console.log(error);
     return res.status(500).send({
       error: "Internal server error."
     });
@@ -915,9 +944,16 @@ module.exports.getCommentVoteCount = async (req, res) => {
       [comment_id]
     );
     if (result.length == 0) {
-      return res.status(404).send({ error: "No comment found" });
-    } else return res.json({ message: result[0].vote_count });
+      return res.status(404).send({
+        error: "No comment found"
+      });
+    } else return res.json({
+      message: result[0].vote_count
+    });
   } catch (error) {
-    return res.status(500).send({ error: "Internal server error." });
+    console.log(error);
+    return res.status(500).send({
+      error: "Internal server error."
+    });
   }
 };

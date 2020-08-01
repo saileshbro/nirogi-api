@@ -6,13 +6,16 @@ module.exports.getAllNews = async (req, res) => {
       "SELECT news_id,title,imageUrl,description,written_by,NOW()-updated_at AS updated_at FROM news ORDER BY updated_at"
     );
     if (result.length == 0) {
-      return res.status(404).send({ error: "News not found!" });
+      return res.status(404).send({
+        error: "News not found!"
+      });
     }
     result.forEach(rslt => (rslt.updated_at = timeago(rslt.updated_at)));
     return res.send({
       news: result
     });
   } catch (error) {
+    console.log(error);
     return res.status(500).send({
       error: "Internal server error."
     });
@@ -26,11 +29,14 @@ module.exports.getNewsItem = async (req, res) => {
       [news_id]
     );
     if (result.length == 0) {
-      return res.status(404).send({ error: "News not found!" });
+      return res.status(404).send({
+        error: "News not found!"
+      });
     }
     result.forEach(rslt => (rslt.updated_at = timeago(rslt.updated_at)));
     return res.send(result[0]);
   } catch (error) {
+    console.log(error);
     return res.status(500).send({
       error: "Internal server error."
     });
@@ -66,6 +72,7 @@ module.exports.addNews = async (req, res) => {
       });
     }
   } catch (error) {
+    console.log(error);
     return res.status(500).send({
       error: "Internal server error."
     });

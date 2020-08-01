@@ -38,8 +38,7 @@ module.exports.signup = async (req, res) => {
     }
     if (!passwordValidator.isPasswordValid(user.password)) {
       return res.status(406).json({
-        error:
-          "Required: Minimum eight characters, at least one letter, one number and one special character."
+        error: "Required: Minimum eight characters, at least one letter, one number and one special character."
       });
     }
     const users = await pool.query("SELECT * FROM users WHERE email=?", [
@@ -59,8 +58,7 @@ module.exports.signup = async (req, res) => {
       [user.name, user.email, user.password, "public/images/profile.png"]
     );
 
-    const token = await jwt.sign(
-      {
+    const token = await jwt.sign({
         user_id: result.insertId
       },
       process.env.JWT_SECRET
@@ -73,6 +71,7 @@ module.exports.signup = async (req, res) => {
       token
     });
   } catch (error) {
+    console.log(error);
     return res.status(500).json({
       error
     });
@@ -108,8 +107,7 @@ module.exports.login = async (req, res) => {
         error: "Invalid email or password"
       });
     }
-    const token = await jwt.sign(
-      {
+    const token = await jwt.sign({
         user_id: result[0].user_id
       },
       process.env.JWT_SECRET
@@ -120,6 +118,7 @@ module.exports.login = async (req, res) => {
       token
     });
   } catch (error) {
+    console.log(error);
     return res.status(500).json({
       error: "Internal server error"
     });
@@ -158,8 +157,7 @@ module.exports.changepw = async (req, res) => {
     }
     if (!passwordValidator.isPasswordValid(newpw)) {
       return res.status(406).json({
-        error:
-          "Required: Minimum eight characters, at least one letter, one number and one special character."
+        error: "Required: Minimum eight characters, at least one letter, one number and one special character."
       });
     }
     newpw = await bcrypt.hash(newpw, parseInt(process.env.SALT_ROUNDS));
@@ -178,6 +176,7 @@ module.exports.changepw = async (req, res) => {
       });
     }
   } catch (error) {
+    console.log(error);
     return res.status(500).send({
       error: "Internal server error."
     });
@@ -210,6 +209,7 @@ module.exports.forgot = async (req, res) => {
       });
     }
   } catch (error) {
+    console.log(error);
     return res.status(500).send({
       error: "Internal server error."
     });

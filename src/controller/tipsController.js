@@ -18,6 +18,7 @@ module.exports.addFood = async (req, res) => {
       });
     }
   } catch (error) {
+    console.log(error);
     return res.status(500).send({
       error: "Internal server error"
     });
@@ -59,16 +60,17 @@ module.exports.addToDisease = async (req, res) => {
       toavoid: avoider
     });
   } catch (error) {
+    console.log(error);
     return res.sendStatus(500);
   }
 };
 module.exports.getDiseases = async (req, res) => {
   try {
     const result = await pool.query(`
-        SELECT DISTINCT d.disease_id, d.disease, d.imageUrl 
-        FROM diseases AS d 
-        INNER JOIN tips AS t 
-        USING(disease_id) 
+        SELECT DISTINCT d.disease_id, d.disease, d.imageUrl
+        FROM diseases AS d
+        INNER JOIN tips AS t
+        USING(disease_id)
         ORDER BY d.disease
         `);
     if (result.length == 0) {
@@ -80,6 +82,7 @@ module.exports.getDiseases = async (req, res) => {
         diseases: result
       });
   } catch (error) {
+    console.log(error);
     return res.status(500).send({
       error: "Internal server error."
     });
@@ -90,11 +93,11 @@ module.exports.getTips = async (req, res) => {
   try {
     const result = await pool.query(
       `SELECT f.name,f.imageUrl,t.value ,d.disease
-                                    From food AS f 
-                                    INNER JOIN tips AS t 
-                                    ON f.food_id=t.food_id 
-                                    INNER JOIN diseases AS d 
-                                    on t.disease_id=d.disease_id 
+                                    From food AS f
+                                    INNER JOIN tips AS t
+                                    ON f.food_id=t.food_id
+                                    INNER JOIN diseases AS d
+                                    on t.disease_id=d.disease_id
                                     WHERE d.disease_id=?`,
       [disease_id]
     );
@@ -118,6 +121,7 @@ module.exports.getTips = async (req, res) => {
       toavoid
     });
   } catch (error) {
+    console.log(error);
     return res.status(500).send({
       error: "Internal server error."
     });

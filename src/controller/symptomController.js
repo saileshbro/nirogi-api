@@ -13,6 +13,7 @@ module.exports.getSymptoms = async (req, res) => {
       symptoms: results
     });
   } catch (error) {
+    console.log(error);
     return res.status(500).json({
       error: "Internal server error"
     });
@@ -33,6 +34,7 @@ module.exports.getSearchSymptoms = async (req, res) => {
       symptoms: results
     });
   } catch (error) {
+    console.log(error);
     return res.status(500).json({
       error: "Internal server error"
     });
@@ -52,6 +54,7 @@ module.exports.getSymptom = async (req, res) => {
     }
     return res.json(results[0]);
   } catch (error) {
+    console.log(error);
     return res.status(500).json({
       error: "Internal server error"
     });
@@ -83,6 +86,7 @@ module.exports.addSymptoms = async (req, res) => {
       }
     }
   } catch (error) {
+    console.log(error);
     return res.status(500).json({
       error: "Internal server error"
     });
@@ -113,6 +117,7 @@ module.exports.topSymptoms = async (req, res) => {
       symptoms: results
     });
   } catch (error) {
+    console.log(error);
     return res.status(500).json({
       error: "Internal server error"
     });

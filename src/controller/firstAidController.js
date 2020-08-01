@@ -9,12 +9,19 @@ module.exports.addFirstAid = async (req, res) => {
       [title, body, imageUrl]
     );
     if (insert.affectedRows == 1) {
-      return res.send({ id: insert.insertId });
+      return res.send({
+        id: insert.insertId
+      });
     } else {
-      return res.send({ error: "Error inserting data" });
+      return res.send({
+        error: "Error inserting data"
+      });
     }
   } catch (error) {
-    return res.status(500).send({ error: "Internal server error." });
+    console.log(error);
+    return res.status(500).send({
+      error: "Internal server error."
+    });
   }
 };
 module.exports.getFirstAids = async (req, res) => {
@@ -23,11 +30,18 @@ module.exports.getFirstAids = async (req, res) => {
       "SELECT first_aid_id,title,imageUrl FROM firstaids"
     );
     if (result.title == 0) {
-      return res.status(404).send({ error: "No first aids found!" });
+      return res.status(404).send({
+        error: "No first aids found!"
+      });
     }
-    return res.send({ firstaids: result });
+    return res.send({
+      firstaids: result
+    });
   } catch (error) {
-    return res.status(500).send({ error: "Internal server error." });
+    console.log(error);
+    return res.status(500).send({
+      error: "Internal server error."
+    });
   }
 };
 module.exports.getFirstAid = async (req, res) => {
@@ -38,10 +52,15 @@ module.exports.getFirstAid = async (req, res) => {
       [first_aid_id]
     );
     if (result.length == 0) {
-      return res.status(404).send({ error: "First aid not found!" });
+      return res.status(404).send({
+        error: "First aid not found!"
+      });
     }
     return res.send(result[0]);
   } catch (error) {
-    return res.status(500).send({ error: "Internal server error." });
+    console.log(error);
+    return res.status(500).send({
+      error: "Internal server error."
+    });
   }
 };

@@ -16,6 +16,7 @@ module.exports.myProfile = async (req, res) => {
     }
     return res.send(result[0]);
   } catch (error) {
+    console.log(error);
     return res.status(500).send({
       error: "Internal server error."
     });
@@ -35,6 +36,7 @@ module.exports.viewProfile = async (req, res) => {
     }
     return res.send(result[0]);
   } catch (error) {
+    console.log(error);
     return res.status(500).send({
       error: "Internal server error."
     });
@@ -54,6 +56,7 @@ module.exports.getProfiles = async (req, res) => {
       users: result
     });
   } catch (error) {
+    console.log(error);
     return res.status(500).send({
       error: "Internal server error."
     });
@@ -85,9 +88,12 @@ module.exports.updateProfile = async (req, res) => {
       [email.trim(), name.trim(), address.trim(), user_id]
     );
     if (result.affectedRows == 1) {
-      return res.send({ message: "Updated successfully." });
+      return res.send({
+        message: "Updated successfully."
+      });
     }
   } catch (error) {
+    console.log(error);
     return res.status(500).send({
       error: "Internal server error."
     });
@@ -110,6 +116,7 @@ module.exports.updateImage = async (req, res) => {
       });
     }
   } catch (error) {
+    console.log(error);
     return res.status(500).send({
       error: "Internal server error."
     });

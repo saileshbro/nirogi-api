@@ -6,7 +6,9 @@ const auth = async (req, res, next) => {
       !req.header("Authorization") ||
       req.header("Authorization") === "Bearer null"
     ) {
-      return res.status(401).json({ error: "Please authenticate" });
+      return res.status(401).json({
+        error: "Please authenticate"
+      });
     }
     const token = req.header("Authorization").replace("Bearer ", "");
 
@@ -15,7 +17,9 @@ const auth = async (req, res, next) => {
       decoded.user_id
     ]);
     if (user.length === 0) {
-      return res.status(401).json({ error: "Please authenticate" });
+      return res.status(401).json({
+        error: "Please authenticate"
+      });
     }
     req.token = token;
     req.user = user[0];
@@ -24,7 +28,10 @@ const auth = async (req, res, next) => {
     delete req.user.updated_at;
     next();
   } catch (error) {
-    return res.status(500).json({ error: "Internal server error" });
+    console.log(error);
+    return res.status(500).json({
+      error: "Internal server error"
+    });
   }
 };
 module.exports = auth;

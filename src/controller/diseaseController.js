@@ -13,6 +13,7 @@ module.exports.getDiseases = async (req, res) => {
       diseases: results
     });
   } catch (error) {
+    console.log(error);
     return res.status(500).json({
       error: "Internal server error"
     });
@@ -33,6 +34,7 @@ module.exports.getSearchDiseases = async (req, res) => {
       diseases: results
     });
   } catch (error) {
+    console.log(error);
     return res.status(500).json({
       error: "Internal server error"
     });
@@ -52,6 +54,7 @@ module.exports.getDisease = async (req, res) => {
     }
     return res.json(results[0]);
   } catch (error) {
+    console.log(error);
     return res.status(500).json({
       error: "Internal server error"
     });
@@ -83,6 +86,7 @@ module.exports.addDiseases = async (req, res) => {
       }
     }
   } catch (error) {
+    console.log(error);
     return res.status(500).json({
       error: "Internal server error"
     });
@@ -113,6 +117,7 @@ module.exports.topDiseases = async (req, res) => {
       diseases: results
     });
   } catch (error) {
+    console.log(error);
     return res.status(500).json({
       error: "Internal server error"
     });
