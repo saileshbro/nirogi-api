@@ -35,7 +35,7 @@
     "jsonwebtoken": "^9.0.2",
     "multer": "^1.4.4",
     "mysql2": "^3.9.2",
-    "sanitize-html": "^2.12.1",
+    "sanitize-html": "^2.13.0",
     "util": "^0.12.5",
     "validator": "^13.11.0"
   },
