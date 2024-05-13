@@ -37,7 +37,7 @@
     "mysql2": "^3.9.7",
     "sanitize-html": "^2.12.1",
     "util": "^0.12.5",
-    "validator": "^13.11.0"
+    "validator": "^13.12.0"
   },
   "devDependencies": {
     "eslint": "^9.1.1",
