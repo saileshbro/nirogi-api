@@ -34,7 +34,7 @@
     "htmlencode": "0.0.4",
     "jsonwebtoken": "^9.0.2",
     "multer": "^1.4.4",
-    "mysql2": "^3.10.2",
+    "mysql2": "^3.10.3",
     "sanitize-html": "^2.12.1",
     "util": "^0.12.5",
     "validator": "^13.12.0"
