@@ -33,7 +33,7 @@
     "express": "^5.1.0",
     "htmlencode": "0.0.4",
     "jsonwebtoken": "^9.0.2",
-    "multer": "^1.4.4",
+    "multer": "^2.0.0",
     "mysql2": "^3.14.0",
     "sanitize-html": "^2.15.0",
     "util": "^0.12.5",
